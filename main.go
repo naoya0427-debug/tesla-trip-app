@@ -12,6 +12,23 @@ import (
 	"time"
 )
 
+// 認証用のIDとパスワード（お好みの文字列に変更してください）
+const basicUser = "admin"
+const basicPass = "password123"
+
+// Basic認証用のミドルウェア関数
+func basicAuth(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user, pass, ok := r.BasicAuth()
+		if !ok || user != basicUser || pass != basicPass {
+			w.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		next(w, r)
+	}
+}
+
 // Charger represents a Tesla Supercharger
 type Charger struct {
 	Name     string `json:"name"`
@@ -424,14 +441,14 @@ func HandleBackendSimulation(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/api/chargers", chargersHandler)
-	http.HandleFunc("/api/mariotto", mariottoHandler)
-	http.HandleFunc("/api/base", baseHandler)
-	http.HandleFunc("/api/ec", ecHandler)
-	http.HandleFunc("/api/gmkey", gmkeyHandler)
-	http.HandleFunc("/api/simulation", HandleBackendSimulation)
+	http.HandleFunc("/api/chargers", basicAuth(chargersHandler))
+	http.HandleFunc("/api/mariotto", basicAuth(mariottoHandler))
+	http.HandleFunc("/api/base", basicAuth(baseHandler))
+	http.HandleFunc("/api/ec", basicAuth(ecHandler))
+	http.HandleFunc("/api/gmkey", basicAuth(gmkeyHandler))
+	http.HandleFunc("/api/simulation", basicAuth(HandleBackendSimulation))
 
-	http.Handle("/", http.FileServer(http.Dir(".")))
+	http.Handle("/", basicAuth(http.FileServer(http.Dir(".")).ServeHTTP))
 
 	port := os.Getenv("PORT")
 	if port == "" {
