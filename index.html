@@ -1074,8 +1074,12 @@
                     baseTotalDistanceKm = totalDistanceMeters / 1000;
                     
                     const leafCoords = [];
-                    gRoute.overview_path.forEach(function(latLng) {
-                        leafCoords.push(L.latLng(latLng.lat(), latLng.lng()));
+                    gRoute.legs.forEach(function(l) {
+                        l.steps.forEach(function(step) {
+                            step.path.forEach(function(latLng) {
+                                leafCoords.push(L.latLng(latLng.lat(), latLng.lng()));
+                            });
+                        });
                     });
 
                     googlePolylineLayer = L.polyline(leafCoords, { color: 'blue', opacity: 0.6, weight: 6 }).addTo(map);
@@ -1353,7 +1357,7 @@
                 return { temperatures: temps, codes: codes };
             } catch (e) {
                 screenLog(`[Weather API Error] Data mapping runtime crash: ` + e.message, true);
-                return { temperatures: coords.map(() => 20), codes: coords.map(() => 0) };
+                return { temperatures: coords.map(() => 20), codes: codes.map(() => 0) };
             }
         }
 
@@ -1488,8 +1492,12 @@
                                 const distanceIncreaseKm = Math.max(0, detourTotalDistanceKm - baseTotalDistanceKm);
 
                                 const leafCoords = [];
-                                gRoute.overview_path.forEach(latLng => {
-                                    leafCoords.push(L.latLng(latLng.lat(), latLng.lng()));
+                                gRoute.legs.forEach(function(l) {
+                                    l.steps.forEach(function(step) {
+                                        step.path.forEach(function(latLng) {
+                                            leafCoords.push(L.latLng(latLng.lat(), latLng.lng()));
+                                        });
+                                    });
                                 });
 
                                 const subRoute = {
