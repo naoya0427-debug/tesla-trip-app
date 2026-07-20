@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced EV Trip Planner</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f5f7fb;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+            z-index: 1;
+        }
+
+        #sidebar {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 300px;
+            max-height: calc(100% - 20px);
+            background: rgba(255, 255, 255, 0.96);
+            z-index: 1000;
+            padding: 12px 14px;
+            overflow-y: auto;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            box-sizing: border-box; 
+        }
+
+        #sidebar.minimized {
+            transform: translateX(-340px);
+        }
+
+        .toggle-btn-sidebar {
+            position: absolute;
+            top: 10px;
+            left: 325px;
+            z-index: 1001;
+            width: 36px;
+            padding: 6px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            cursor: pointer;
+            font-weight: bold;
+            color: #4a5568;
+        }
+
+        h1 {
+            font-size: 16px;
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: #1a202c;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .section {
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .section-title {
+            font-weight: 600;
+            font-size: 12.5px;
+            margin-bottom: 6px;
+            color: #2d3748;
+            border-left: 3px solid #00cccc; 
+            padding-left: 6px;
+        }
+
+        .control-group {
+            margin-bottom: 5px;
+            position: relative;
+        }
+
+        .search-wrapper {
+            display: flex;
+            gap: 4px;
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            margin-bottom: 2px;
+            color: #4a5568;
+        }
+
+        input[type="text"], input[type="number"], select, input[type="datetime-local"] {
+            width: 100%;
+            padding: 5px 6px;
+            box-sizing: border-box;
+            border: 1px solid #cbd5e0;
+            border-radius: 5px;
+            font-size: 12px;
+            background-color: #f8fafc;
+            color: #2d3748;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #00cccc;
+            box-shadow: 0 0 0 2px rgba(0, 204, 204, 0.15);
+            background-color: #ffffff;
+        }
+
+        .search-btn {
+            width: auto;
+            white-space: nowrap;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4px;
+            margin-top: 3px;
+        }
+
+        .section .checkbox-group:has(#batt-full) {
+            grid-template-columns: repeat(3, 1fr) !important;
+        }
+
+        button {
+            width: 100%;
+            padding: 6px 8px;
+            margin-top: 3px;
+            cursor: pointer;
+            border: 1px solid #cbd5e0;
+            border-radius: 5px;
+            background: linear-gradient(to bottom, #ffffff, #f7fafc);
+            font-size: 12px;
+            font-weight: 500;
+            color: #4a5568;
+            transition: all 0.15s ease;
+        }
+        button:hover {
+            background: linear-gradient(to bottom, #f7fafc, #edf2f7);
+            border-color: #a0aec0;
+            color: #2d3748;
+        }
+
+        #recalc-btn {
+            background: linear-gradient(135deg, #00cccc, #00b3b3);
+            color: white;
+            border: none;
+            font-weight: 600;
+            margin-top: 6px;
+            box-shadow: 0 2px 4px rgba(0,204,204,0.2);
+        }
+        #recalc-btn:hover {
+            background: linear-gradient(135deg, #00b3b3, #009999);
+            box-shadow: 0 2px 6px rgba(0,204,204,0.3);
+        }
+
+        #search-results {
+            background: white;
+            border: 1px solid #cbd5e0;
+            border-radius: 5px;
+            max-height: 150px;
+            overflow-y: auto;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 2000;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .search-item {
+            padding: 5px;
+            cursor: pointer;
+            font-size: 11px;
+            border-bottom: 1px solid #edf2f7;
+            color: #2d3748;
+        }
+        .search-item:hover {
+            background: #f7fafc;
+            color: #00cccc;
+        }
+
+        #soc-display {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            z-index: 1000;
+            min-width: 180px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        #soc-display.minimized {
+            transform: translateX(250px);
+        }
+
+        .toggle-btn-soc {
+            position: absolute;
+            bottom: 10px;
+            right: 215px;
+            z-index: 1001;
+            width: 40px;
+            padding: 8px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+            font-weight: bold;
+            transition: right 0.3s ease;
+        }
+
+        #soc-display.minimized + .toggle-btn-soc {
+            right: 10px;
+        }
+
+        .soc-value {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .summary-item {
+            font-size: 12px;
+            margin-top: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .sample-table {
+            width: 100%;
+            font-size: 11px;
+            border-collapse: collapse;
+            margin-top: 5px;
+        }
+        .sample-table th, .sample-table td {
+            border: 1px solid #ccc;
+            padding: 4px;
+            text-align: left;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .leaflet-routing-container {
+            display: none !important;
+        }
+
+        #markers-summary-display {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 510px;
+            max-height: 300px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            z-index: 1000;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            overflow-y: auto;
+            display: none;
+            transition: transform 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        #markers-summary-display.minimized {
+            transform: translateX(540px);
+        }
+
+        .toggle-btn-markers {
+            position: absolute;
+            top: 10px;
+            right: 535px;
+            z-index: 1001;
+            width: 40px;
+            padding: 8px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+            font-weight: bold;
+            display: none;
+            transition: right 0.3s ease;
+        }
+
+        #markers-summary-display.minimized + .toggle-btn-markers {
+            right: 10px;
+        }
+
+        #markers-summary-display h2 {
+            font-size: 14px;
+            margin-top: 0;
+            margin-bottom: 8px;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 3px;
+        }
+        .markers-table {
+            width: 100%;
+            font-size: 11px;
+            border-collapse: collapse;
+        }
+        .markers-table th, .markers-table td {
+            border: 1px solid #ccc;
+            padding: 5px;
+            text-align: left;
+        }
+        .markers-table th {
+            background-color: #f5f5f5;
+        }
+
+        #route-title-display {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 8px 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            z-index: 1000;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            white-space: nowrap;
+        }
+
+        #debug-logger {
+            position: absolute;
+            bottom: 10px;
+            left: 340px;
+            width: 450px;
+            max-height: 120px;
+            background: rgba(0, 0, 0, 0.85);
+            color: #ff3333;
+            font-family: monospace;
+            font-size: 11px;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-y: auto;
+            z-index: 99999;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            pointer-events: auto;
+            transition: transform 0.3s ease, left 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        #debug-logger.minimized {
+            transform: translateY(150px);
+        }
+
+        #sidebar.minimized ~ #debug-logger {
+            left: 10px;
+        }
+
+        .toggle-btn-debug {
+            position: absolute;
+            bottom: 140px;
+            left: 340px;
+            z-index: 99999;
+            width: 100px;
+            padding: 4px;
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 11px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: bottom 0.3s ease, left 0.3s ease;
+        }
+
+        #debug-logger.minimized + .toggle-btn-debug {
+            bottom: 10px;
+        }
+
+        #sidebar.minimized ~ .toggle-btn-debug {
+            left: 10px;
+        }
+
+        .engine-selector-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+        .engine-selector-group label {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" class="loading-overlay">シミュレーション計算中...</div>
+
+    <div id="route-title-display"></div>
+
+    <button id="toggle-sidebar" class="toggle-btn-sidebar">◀</button>
+
+    <div id="sidebar">
+        <h1>EV Trip Planner</h1>
+        
+        <div class="section">
+            <div class="section-title">ルート検索</div>
+            <div class="control-group">
+                <label>検索エンジン</label>
+                <div class="engine-selector-group">
+                    <label><input type="radio" name="routing-engine" value="osrm" checked> OSRM</label>
+                    <label id="google-engine-lbl"><input type="radio" name="routing-engine" value="google" id="google-engine-radio"> GoogleMAP</label>
+                    <label id="google-traffic-lbl" style="margin-left: 5px;"><input type="checkbox" id="google-traffic-cb"> 渋滞考慮</label>
+                </div>
+            </div>
+            <div class="control-group">
+                <label>起点 / 目的地 検索</label>
+                <div class="search-wrapper">
+                    <input type="text" id="search-input" placeholder="名称や住所を入力...">
+                    <button id="search-btn" class="search-btn">検索</button>
+                </div>
+                <div id="search-results"></div>
+            </div>
+            <div style="display: flex; gap: 4px; margin-top: 2px;">
+                <button id="home-start-btn" style="flex: 1;">自宅を起点に</button>
+                <button id="home-end-btn" style="flex: 1;">自宅を目的地に</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <details>
+                <summary style="cursor: pointer; font-weight: bold; font-size: 12px; color: #2d3748;">Mariotto Hotels</summary>
+                <div id="brand-filters" class="checkbox-group"></div>
+            </details>
+        </div>
+
+        <div class="section">
+            <div class="section-title">車両・走行設定</div>
+            <div class="control-group">
+                <label>基本車速 (km/h)</label>
+                <input type="number" id="target-speed" value="105">
+            </div>
+            <div class="checkbox-group">
+                <div class="control-group">
+                    <label>容量(kWh)</label>
+                    <input type="number" id="batt-full" step="0.1">
+                </div>
+                <div class="control-group">
+                    <label>バッファ</label>
+                    <input type="number" id="batt-buff" step="0.1">
+                </div>
+                <div class="control-group">
+                    <label>出発SoC(%)</label>
+                    <input type="number" id="soc-start">
+                </div>
+            </div>
+            <div class="control-group">
+                <label>出発時刻</label>
+                <input type="datetime-local" id="dep-time">
+            </div>
+            <button id="recalc-btn">再計算・適用</button>
+        </div>
+
+        <div class="section">
+            <div class="section-title">GIS 抽出条件 (SC)</div>
+            <div class="control-group">
+                <label>最小走行距離 (km)</label>
+                <input type="number" id="gis-min-dist" value="150">
+            </div>
+            <div class="control-group">
+                <label>ルート→SC許容距離 (km)</label>
+                <input type="number" id="gis-max-dev" value="10">
+            </div>
+        </div>
+
+        <div class="section" style="border-bottom: none;">
+            <div class="section-title">シミュレーション詳細 (50km毎)</div>
+            <div id="sample-container">
+                <div style="font-size: 11px; color: #718096; font-style: italic; padding: 4px 0;">ルート検索後に詳細が表示されます</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="debug-logger">
+        <div style="color: #00ff00; font-weight: bold;">[Debug Logger initialized. Errors will appear here]</div>
+    </div>
+    <button id="toggle-debug" class="toggle-btn-debug">Log 閉じる</button>
+
+    <div id="soc-display">
+        <div class="soc-value" id="soc-result">--%</div>
+        <div class="summary-item"><span>総走行距離</span><span id="total-dist">-- km</span></div>
+        <div class="summary-item"><span>経過時間</span><span id="total-time">-- 時間 -- 分</span></div>
+        <div class="summary-item"><span>到着時刻</span><span id="dest-arrival-time">--:--</span></div>
+        <div class="summary-item"><span>平均電費 (平地)</span><span id="avg-ec">-- Wh/km</span></div>
+        <div class="summary-item"><span>位置エネルギー影響</span><span id="elev-energy">-- kWh</span></div>
+    </div>
+    <button id="toggle-soc" class="toggle-btn-soc">▶</button>
+
+    <div id="markers-summary-display">
+        <h2>経由SC情報</h2>
+        <table class="markers-table">
+            <thead>
+                <tr>
+                    <th>名称</th>
+                    <th>AreaType</th>
+                    <th>距離(km)</th>
+                    <th>到着時刻</th>
+                    <th>電費(wh/km)</th>
+                    <th>位置E(kwh)</th>
+                    <th>到着SoC</th>
+                </tr>
+            </thead>
+            <tbody id="markers-summary-tbody"></tbody>
+        </table>
+    </div>
+    <button id="toggle-markers" class="toggle-btn-markers">▶</button>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+
+    <script>
+        function screenLog(message, isError) {
+            const logger = document.getElementById('debug-logger');
+            if (logger) {
+                const div = document.createElement('div');
+                if (isError) {
+                    div.style.color = '#ff3333';
+                    div.style.fontWeight = 'bold';
+                    div.textContent = "[ERROR] " + message;
+                } else {
+                    div.style.color = '#33ff33';
+                    div.textContent = "[INFO] " + message;
+                }
+                logger.appendChild(div);
+                logger.scrollTop = logger.scrollHeight;
+            }
+            if (isError) {
+                console.error(message);
+            } else {
+                console.log(message);
+            }
+        }
+
+        window.onerror = function(message, source, lineno, colno, error) {
+            screenLog(`${message} at ${source}:${lineno}:${colno}`, true);
+            return false;
+        };
+        window.addEventListener('unhandledrejection', function(event) {
+            screenLog(`Unhandled Promise Rejection: ${event.reason}`, true);
+        });
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        const HOME_POS = [35.674803266289864, 139.46550165203817];
+        let map, routingControl;
+        let googlePolylineLayer = null;
+        let lastGoogleRouteObject = null;
+        let scMarkers = [], hotelMarkers = [];
+        let scData = [], hotelData = [], baseParams = {}, ecMatrix = [];
+        
+        let startPoint = null, endPoint = null;
+        let startMarker = null, endMarker = null;
+        let searchPreviewMarker = null;
+        let clickPopup = null;
+        let startName = "", endName = "";
+        let googleMapsLoaded = false;
+        let baseTotalDistanceKm = 0; 
+        let currentGoogleMapsApiKey = ""; 
+
+        function getWeatherIcon(code) {
+            if (code === undefined || code === null) return "❓";
+            if (code === 0) return "☀️";
+            if (code >= 1 && code <= 3) return "⛅";
+            if (code >= 45 && code <= 48) return "🌫️";
+            if (code >= 51 && code <= 55) return "🌧️";
+            if (code >= 61 && code <= 65) return "☔";
+            if (code >= 71 && code <= 77) return "❄️";
+            if (code >= 80 && code <= 82) return "🌦️";
+            if (code >= 85 && code <= 86) return "☃️";
+            if (code >= 95 && code <= 99) return "⚡";
+            return "☁️";
+        }
+
+        function initMap() {
+            try {
+                screenLog("Initializing map...");
+                map = L.map('map').setView(HOME_POS, 11);
+                L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                    attribution: '© Google'
+                }).addTo(map);
+
+                map.createPane('scPane');
+                map.createPane('hotelPane');
+                map.getPane('scPane').style.zIndex = 620;
+                map.getPane('hotelPane').style.zIndex = 600;
+
+                L.marker(HOME_POS).addTo(map).bindPopup("自宅");
+
+                map.on('click', function(e) {
+                    if (clickPopup) map.closePopup(clickPopup);
+
+                    if (searchPreviewMarker) {
+                        map.removeLayer(searchPreviewMarker);
+                        searchPreviewMarker = null;
+                    }
+
+                    const lat = e.latlng.lat;
+                    const lng = e.latlng.lng;
+
+                    clickPopup = L.popup()
+                        .setLatLng(e.latlng)
+                        .setContent(`
+                            <div>
+                                <strong>選択した地点</strong><br><br>
+                                <button onclick="setPointFromClick('start', ${lat}, ${lng})">起点に設定</button>
+                                <button onclick="setPointFromClick('end', ${lat}, ${lng})">目的地に設定</button>
+                            </div>
+                        `)
+                        .openOn(map);
+                });
+                screenLog("Map initialized successfully.");
+            } catch (e) {
+                screenLog("Failed to initMap: " + e.message, true);
+            }
+        }
+
+        function setPointFromClick(type, lat, lng) {
+            if (clickPopup) {
+                map.closePopup(clickPopup);
+                clickPopup = null;
+            }
+            setPoint(type, lat, lng, type === 'start' ? '指定地点(A)' : '指定地点(B)');
+        }
+
+        async function fetchData() {
+            try {
+                screenLog("Fetching application data from backend APIs...");
+                const [scRes, hotelRes, baseRes, ecRes, gmkeyRes] = await Promise.all([
+                    fetch('/api/chargers'),
+                    fetch('/api/mariotto'),
+                    fetch('/api/base'),
+                    fetch('/api/ec'),
+                    fetch('/api/gmkey')
+                ]);
+
+                screenLog(`API Response Statuses - Chargers: ${scRes.status}, Mariotto: ${hotelRes.status}, Base: ${baseRes.status}, EC: ${ecRes.status}, GMKey: ${gmkeyRes.status}`);
+
+                if (!scRes.ok || !hotelRes.ok || !baseRes.ok || !ecRes.ok || !gmkeyRes.ok) {
+                    throw new Error(`One or more API endpoints returned non-OK status.`);
+                }
+
+                scData = await scRes.json();
+                hotelData = await hotelRes.json();
+                baseParams = await baseRes.json();
+                ecMatrix = await ecRes.json();
+                const gmkeyData = await gmkeyRes.json();
+
+                if (gmkeyData.available && gmkeyData.key) {
+                    screenLog("Google Maps API key is available. Loading Google Maps script...");
+                    currentGoogleMapsApiKey = gmkeyData.key; 
+                    loadGoogleMapsScript(gmkeyData.key);
+                } else {
+                    screenLog("Google Maps API key is not available or empty. Disabling GoogleMAP option.");
+                    const radio = document.getElementById('google-engine-radio');
+                    if (radio) radio.disabled = true;
+                    const label = document.getElementById('google-engine-lbl');
+                    if (label) {
+                        label.style.color = '#a0aec0';
+                        label.style.cursor = 'not-allowed';
+                    }
+                    const trafficCb = document.getElementById('google-traffic-cb');
+                    if (trafficCb) trafficCb.disabled = true;
+                    const trafficLbl = document.getElementById('google-traffic-lbl');
+                    if (trafficLbl) {
+                        trafficLbl.style.color = '#a0aec0';
+                        trafficLbl.style.cursor = 'not-allowed';
+                    }
+                }
+
+                screenLog(`Data loaded - SC count: ${scData.length}, Hotel count: ${hotelData.length}, ecMatrix rows: ${ecMatrix.length}`);
+
+                initFilters();
+                renderChargers();
+                updateFormValues();
+                screenLog("All filter data and chargers rendered successfully.");
+            } catch (e) {
+                screenLog("Failed inside fetchData: " + e.message, true);
+            }
+        }
+
+        function loadGoogleMapsScript(key) {
+            try {
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=onGoogleMapsLibrariesLoaded`;
+                script.async = true;
+                script.defer = true;
+                window.onGoogleMapsLibrariesLoaded = function() {
+                    googleMapsLoaded = true;
+                    screenLog("Google Maps JavaScript API loaded successfully.");
+                };
+                document.head.appendChild(script);
+            } catch (e) {
+                screenLog("Failed to append Google Maps script: " + e.message, true);
+            }
+        }
+
+        function updateFormValues() {
+            try {
+                document.getElementById('batt-full').value = baseParams.batt_full;
+                document.getElementById('batt-buff').value = baseParams.batt_buff;
+                document.getElementById('soc-start').value = baseParams.soc_start;
+                
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                document.getElementById('dep-time').value = now.toISOString().slice(0, 16);
+            } catch (e) {
+                screenLog("Failed in updateFormValues: " + e.message, true);
+            }
+        }
+
+        function initFilters() {
+            try {
+                const brands = [...new Set(hotelData.map(h => h.brand))].sort();
+                const container = document.getElementById('brand-filters');
+                brands.forEach(brand => {
+                    const div = document.createElement('div');
+                    div.className = 'checkbox-item';
+                    div.innerHTML = `<label><input type="checkbox" value="${brand}"> ${brand}</label>`;
+                    div.querySelector('input').addEventListener('change', renderHotels);
+                    container.appendChild(div);
+                });
+            } catch (e) {
+                screenLog("Failed in initFilters: " + e.message, true);
+            }
+        }
+
+        function renderChargers() {
+            try {
+                scMarkers.forEach(m => map.removeLayer(m));
+                scMarkers = [];
+
+                scData.forEach(sc => {
+                    if (!sc.lat || !sc.lng) return;
+                    const marker = L.circleMarker([sc.lat, sc.lng], {
+                        radius: 6,
+                        fillColor: '#ff00ff',
+                        color: '#fff',
+                        weight: 1,
+                        fillOpacity: 0.8,
+                        pane: 'scPane'
+                    }).addTo(map);
+
+                    marker.bindPopup(`
+                        <div>
+                            <strong>${sc.name}</strong><br>
+                            ${sc.power} kW / ${sc.stalls} stalls<br>
+                            タイプ: ${sc.AreaType || '未設定'}<br><br>
+                            <button onclick="setPoint('start', ${sc.lat}, ${sc.lng}, '${sc.name}')">起点に設定</button>
+                            <button onclick="setPoint('end', ${sc.lat}, ${sc.lng}, '${sc.name}')">目的地に設定</button>
+                        </div>
+                    `);
+                    sc.marker = marker;
+                    scMarkers.push(marker);
+                });
+            } catch (e) {
+                screenLog("Failed in renderChargers: " + e.message, true);
+            }
+        }
+
+        function renderHotels() {
+            try {
+                hotelMarkers.forEach(m => map.removeLayer(m));
+                hotelMarkers = [];
+
+                const checkedBrands = Array.from(document.querySelectorAll('#brand-filters input:checked')).map(i => i.value);
+                
+                hotelData.forEach(h => {
+                    if (checkedBrands.includes(h.brand)) {
+                        if (!h.lat || !h.lng) return;
+                        const marker = L.circleMarker([h.lat, h.lng], {
+                            radius: 8,
+                            fillColor: '#00cccc',
+                            color: '#0000ff',
+                            weight: 2,
+                            fillOpacity: 0.8,
+                            pane: 'hotelPane'
+                        }).addTo(map);
+
+                    marker.bindPopup(`
+                        <div>
+                            <strong>[${h.brand}] ${h.name}</strong><br>
+                            <button onclick="setPoint('start', ${h.lat}, ${h.lng}, '${h.name}')">起点に設定</button>
+                            <button onclick="setPoint('end', ${h.lat}, ${h.lng}, '${h.name}')">目的地に設定</button>
+                        </div>
+                    `);
+                        hotelMarkers.push(marker);
+                    }
+                });
+            } catch (e) {
+                screenLog("Failed in renderHotels: " + e.message, true);
+            }
+        }
+
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const searchResults = document.getElementById('search-results');
+
+        async function executeSearch() {
+            const query = searchInput.value.trim();
+            if (query.length < 2) {
+                alert("2文字以上入力してください。");
+                return;
+            }
+
+            searchBtn.disabled = true;
+            searchBtn.textContent = "検索中...";
+
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=jp`);
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                
+                const data = await res.json();
+                searchResults.innerHTML = '';
+                
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        let rawName = item.display_name || "不明な場所";
+                        let displayName = rawName.split(',')[0]; 
+
+                        const div = document.createElement('div');
+                        div.className = 'search-item';
+                        div.textContent = rawName;
+                        div.onclick = () => {
+                            const lat = parseFloat(item.lat);
+                            const lon = parseFloat(item.lon);
+
+                            if (searchPreviewMarker) map.removeLayer(searchPreviewMarker);
+
+                            searchPreviewMarker = L.marker([lat, lon]).addTo(map);
+                            searchPreviewMarker.bindPopup(`
+                                <div>
+                                    <strong>${displayName}</strong><br><br>
+                                    <button onclick="setPointFromSearch('start', ${lat}, ${lon}, '${displayName.replace(/'/g, "\\'")}')">起点に設定</button>
+                                    <button onclick="setPointFromSearch('end', ${lat}, ${lon}, '${displayName.replace(/'/g, "\\'")}')">目的地に設定</button>
+                                </div>
+                            `).openPopup();
+
+                            map.setView([lat, lon], 14);
+                            searchResults.style.display = 'block';
+                        };
+                        searchResults.appendChild(div);
+                    });
+                    searchResults.style.display = 'block';
+                } else {
+                    alert("見つかりませんでした。");
+                }
+            } catch (err) {
+                screenLog("Search failed: " + err.message, true);
+                alert(`エラーが発生しました: ${err.message}`);
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.textContent = "検索";
+            }
+        }
+
+        searchBtn.addEventListener('click', executeSearch);
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                executeSearch();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target !== searchInput && e.target !== searchResults && e.target !== searchBtn) {
+                searchResults.style.display = 'none';
+            }
+        });
+
+        function setPointFromSearch(type, lat, lng, name) {
+            if (searchPreviewMarker) {
+                map.removeLayer(searchPreviewMarker);
+                searchPreviewMarker = null;
+            }
+            setPoint(type, lat, lng, name);
+        }
+
+        function setPoint(type, lat, lng, name) {
+            try {
+                const latlng = L.latLng(lat, lng);
+                const label = name ? name : (type === 'start' ? '起点' : '目的地');
+
+                screenLog(`Setting waypoint - Type: ${type}, Name: ${label}, Location: [${lat}, [${lng}]`);
+
+                if (type === 'start') {
+                    startPoint = latlng;
+                    startName = label;
+                    if (startMarker) map.removeLayer(startMarker);
+                    startMarker = L.marker(latlng).addTo(map).bindPopup(`起点: ${label}`);
+                } else {
+                    endPoint = latlng;
+                    endName = label;
+                    if (endMarker) map.removeLayer(endMarker);
+                    endMarker = L.marker(latlng).addTo(map).bindPopup(`目的地: ${label}`);
+                }
+
+                const titleDisplay = document.getElementById('route-title-display');
+                if (startPoint || endPoint) {
+                    let displayText = "";
+                    if (startPoint) displayText += `起点: ${startName}`;
+                    if (startPoint && endPoint) displayText += " → ";
+                    if (endPoint) displayText += `目的地: ${endName}`;
+                    titleDisplay.textContent = displayText;
+                    titleDisplay.style.display = 'block';
+                } else {
+                    titleDisplay.style.display = 'none';
+                }
+
+                if (startPoint && endPoint) {
+                    screenLog("Both start and end points exist. Activating calculateRoute()");
+                    calculateRoute();
+                } else {
+                    map.setView(latlng, 13);
+                }
+            } catch (e) {
+                screenLog("Failed in setPoint: " + e.message, true);
+            }
+        }
+
+        document.getElementById('home-start-btn').onclick = () => {
+            setPoint('start', HOME_POS[0], HOME_POS[1], '自宅');
+        };
+
+        document.getElementById('home-end-btn').onclick = () => {
+            setPoint('end', HOME_POS[0], HOME_POS[1], '自宅');
+        };
+
+        function getSelectedEngine() {
+            const checkedRadio = document.querySelector('input[name="routing-engine"]:checked');
+            return checkedRadio ? checkedRadio.value : 'osrm';
+        }
+
+        function clearRouteLayers() {
+            if (routingControl) {
+                screenLog("Removing existing routingControl layer...");
+                map.removeControl(routingControl);
+                routingControl = null;
+            }
+            if (googlePolylineLayer) {
+                screenLog("Removing existing googlePolylineLayer...");
+                map.removeLayer(googlePolylineLayer);
+                googlePolylineLayer = null;
+            }
+            lastGoogleRouteObject = null;
+        }
+
+        function calculateRoute() {
+            try {
+                clearRouteLayers();
+                const engine = getSelectedEngine();
+                screenLog(`Selected routing engine: ${engine}`);
+
+                if (engine === 'google') {
+                    if (!googleMapsLoaded) {
+                        screenLog("Google Maps API is not loaded yet.", true);
+                        return;
+                    }
+                    calculateGoogleRoute();
+                } else {
+                    calculateOSRMRoute();
+                }
+            } catch (e) {
+                screenLog("Failed to build calculateRoute structure: " + e.message, true);
+            }
+        }
+
+        function calculateOSRMRoute() {
+            screenLog("Creating L.Routing.control for OSRM...");
+            routingControl = L.Routing.control({
+                waypoints: [startPoint, endPoint],
+                lineOptions: {
+                    styles: [{ color: 'blue', opacity: 0.6, weight: 6 }]
+                },
+                createMarker: function() { return null; },
+                addWaypoints: false,
+                routeWhileDragging: false
+            }).on('routesfound', function(e) {
+                screenLog("Leaflet Routing Machine triggered [routesfound] successfully!");
+                const route = e.routes[0];
+                if (!route) {
+                    screenLog("No route data found inside routesfound event parameter.", true);
+                    return;
+                }
+                baseTotalDistanceKm = route.summary.totalDistance / 1000;
+                screenLog(`Route calculated: Total Distance = ${baseTotalDistanceKm} km, Total Time = ${route.summary.totalTime} seconds.`);
+                
+                runBackendSimulation(route).then(() => {
+                    runGISFilter(route);
+                });
+            }).on('routingerror', function(err) {
+                screenLog("Leaflet Routing Machine triggered [routingerror]: " + (err.error ? err.error.message : "Unknown Routing Error"), true);
+            }).addTo(map);
+        }
+
+        function calculateGoogleRoute() {
+            screenLog("Invoking Google Maps Directions Service...");
+            const directionsService = new google.maps.DirectionsService();
+            
+            const request = {
+                origin: new google.maps.LatLng(startPoint.lat, startPoint.lng),
+                destination: new google.maps.LatLng(endPoint.lat, endPoint.lng),
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+
+            const trafficChecked = document.getElementById('google-traffic-cb').checked;
+            if (trafficChecked) {
+                screenLog("Traffic aware routing requested (TRAFFIC_AWARE_OPTIMAL configuration).");
+                request.drivingOptions = {
+                    departureTime: new Date(),
+                    trafficModel: google.maps.TrafficModel.BEST_GUESS
+                };
+            } else {
+                screenLog("Standard routing requested (Traffic unaware mode).");
+            }
+
+            directionsService.route(request, function(result, status) {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    screenLog("Google Maps Directions Service route retrieved successfully.");
+                    const gRoute = result.routes[0];
+                    const leg = gRoute.legs[0];
+                    
+                    const totalDistanceMeters = leg.distance.value;
+                    const totalTimeSeconds = leg.duration.value;
+                    baseTotalDistanceKm = totalDistanceMeters / 1000;
+                    
+                    const leafCoords = [];
+                    gRoute.overview_path.forEach(function(latLng) {
+                        leafCoords.push(L.latLng(latLng.lat(), latLng.lng()));
+                    });
+
+                    googlePolylineLayer = L.polyline(leafCoords, { color: 'blue', opacity: 0.6, weight: 6 }).addTo(map);
+                    
+                    const bounds = L.latLngBounds(leafCoords);
+                    map.fitBounds(bounds);
+
+                    const simulatedRouteObject = {
+                        coordinates: leafCoords,
+                        summary: {
+                            totalDistance: totalDistanceMeters,
+                            totalTime: totalTimeSeconds
+                        }
+                    };
+
+                    lastGoogleRouteObject = simulatedRouteObject;
+                    screenLog(`Google Route parsed: Total Distance = ${baseTotalDistanceKm} km, Total Time = ${totalTimeSeconds} seconds.`);
+
+                    runBackendSimulation(simulatedRouteObject).then(() => {
+                        runGISFilter(simulatedRouteObject);
+                    });
+                } else {
+                    screenLog("Google Maps Directions Service failed due to: " + status, true);
+                }
+            });
+        }
+
+        async function runBackendSimulation(route) {
+            screenLog("Starting runBackendSimulation parsing...");
+            document.getElementById('loading').style.display = 'flex';
+            try {
+                const coords = route.coordinates;
+                const totalDist = route.summary.totalDistance / 1000;
+                const speed = parseFloat(document.getElementById('target-speed').value);
+                const depTimeStr = document.getElementById('dep-time').value;
+                const depTime = new Date(depTimeStr);
+                
+                const battFull = parseFloat(document.getElementById('batt-full').value);
+                const battBuff = parseFloat(document.getElementById('batt-buff').value);
+                const socStart = parseFloat(document.getElementById('soc-start').value);
+
+                const sampleInterval = 50;
+                const stepCount = Math.ceil(totalDist / sampleInterval);
+                const sampleCoords = [];
+                
+                sampleCoords.push(coords[0]); 
+                for (let s = 1; s <= stepCount; s++) {
+                    const targetDist = Math.min(s * sampleInterval, totalDist);
+                    const coordIdx = Math.floor((targetDist / totalDist) * (coords.length - 1));
+                    sampleCoords.push(coords[coordIdx]);
+                }
+
+                screenLog(`Extracting bulk node elevations for all ${sampleCoords.length} sample points...`);
+                const elevations = await getElevationsBulk(sampleCoords);
+
+                screenLog(`[CRITICAL] Fetching SINGLE bulk weather request for ${sampleCoords.length} sample nodes...`);
+                const weatherData = await getTemperaturesBulk(sampleCoords, depTime, speed, sampleInterval, totalDist);
+                const temperatures = weatherData.temperatures;
+                const weatherCodes = weatherData.codes;
+
+                screenLog(`POSTing JSON payload to /api/simulation backend gateway...`);
+                const response = await fetch('/api/simulation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        coordinates: coords,
+                        total_distance: totalDist,
+                        target_speed: speed,
+                        dep_time: depTimeStr,
+                        batt_full: battFull,
+                        batt_buff: battBuff,
+                        soc_start: socStart,
+                        elevations: elevations, 
+                        temperatures: temperatures
+                    })
+                });
+
+                screenLog(`Backend API response status code: ${response.status}`);
+
+                if (!response.ok) {
+                    throw new Error(`Simulation API request failed with status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                screenLog(`Simulation compute response decoded. Final SoC: ${data.final_soc}%`);
+
+                document.getElementById('total-dist').textContent = data.total_dist.toFixed(1) + ' km';
+                document.getElementById('avg-ec').textContent = Math.round(data.avg_ec) + ' Wh/km';
+                document.getElementById('elev-energy').textContent = (data.elev_energy / 1000).toFixed(2) + ' kWh';
+                document.getElementById('soc-result').textContent = Math.round(data.final_soc) + '%';
+
+                const totalSeconds = route.summary.totalTime;
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                document.getElementById('total-time').textContent = hours + ' 時間 ' + minutes + ' 分';
+
+                const totalArrivalDateTime = new Date(depTime.getTime() + totalSeconds * 1000);
+                const totalHh = String(totalArrivalDateTime.getHours()).padStart(2, '0');
+                const totalMm = String(totalArrivalDateTime.getMinutes()).padStart(2, '0');
+                document.getElementById('dest-arrival-time').textContent = totalHh + ':' + totalMm;
+
+                const container = document.getElementById('sample-container');
+                container.innerHTML = '';
+                const table = document.createElement('table');
+                table.className = 'sample-table';
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>距離</th>
+                            <th>標高</th>
+                            <th>電費</th>
+                            <th>気温</th>
+                            <th>天気</th>
+                            <th>SoC</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sample-tbody"></tbody>
+                `;
+                const tbody = table.querySelector('#sample-tbody');
+
+                data.samples.forEach((s, idx) => {
+                    const tr = document.createElement('tr');
+                    const wCode = weatherCodes[idx] !== undefined ? weatherCodes[idx] : null;
+                    tr.innerHTML = `
+                        <td>${Math.round(s.dist)}km</td>
+                        <td>${Math.round(s.elev)}m</td>
+                        <td>${Math.round(s.ec || 0)}</td>
+                        <td>${Math.round(s.temp)}°C</td>
+                        <td>${getWeatherIcon(wCode)}</td>
+                        <td>${Math.round(s.soc)}%</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                container.appendChild(table);
+                screenLog("Main simulation UI outputs updated.");
+
+            } catch (error) {
+                screenLog("Exception caught inside runBackendSimulation: " + error.message, true);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        async function getElevationsBulk(coords) {
+            const engine = getSelectedEngine();
+            if (engine === 'google' && googleMapsLoaded) {
+                screenLog("[Elevation API] Fetching bulk elevations via Google Maps ElevationService...");
+                return new Promise((resolve) => {
+                    const elevator = new google.maps.ElevationService();
+                    const locations = coords.map(c => new google.maps.LatLng(c.lat, c.lng));
+                    
+                    elevator.getElevationForLocations({ locations: locations }, function(results, status) {
+                        if (status === google.maps.ElevationStatus.OK && results) {
+                            const elevations = results.map(r => r.elevation || 0);
+                            resolve(elevations);
+                        } else {
+                            screenLog(`[Elevation API Error] Google ElevationService failed status: ${status}. Falling back to zeros.`, true);
+                            resolve(coords.map(() => 0));
+                        }
+                    });
+                });
+            }
+
+            let maxRetries = 5;
+            let baseDelay = 1000;
+            for (let attempt = 0; attempt < maxRetries; attempt++) {
+                try {
+                    const lats = coords.map(c => c.lat).join(',');
+                    const lngs = coords.map(c => c.lng).join(',');
+                    const url = `https://api.open-meteo.com/v1/elevation?latitude=${lats}&longitude=${lngs}`;
+                    const res = await fetch(url);
+                    
+                    if (res.status === 429 && attempt < maxRetries - 1) {
+                        let delay = baseDelay * Math.pow(2, attempt);
+                        screenLog(`[Elevation API] 429 Too Many Requests. Retrying in ${delay}ms (Attempt ${attempt + 1}/${maxRetries})...`, false);
+                        await sleep(delay);
+                        continue;
+                    }
+
+                    if (!res.ok) {
+                        screenLog(`[Elevation API Error] Open-Meteo Elevation endpoint failure status: ${res.status}`, true);
+                        return coords.map(() => 0);
+                    }
+                    const data = await res.json();
+                    return data.elevation || coords.map(() => 0);
+                } catch (e) {
+                    if (attempt < maxRetries - 1) {
+                        let delay = baseDelay * Math.pow(2, attempt);
+                        screenLog(`[Elevation API] Fetch error: ${e.message}. Retrying in ${delay}ms...`, false);
+                        await sleep(delay);
+                        continue;
+                    }
+                    screenLog(`[Elevation API Error] Fetch runtime crash: ` + e.message, true);
+                    return coords.map(() => 0);
+                }
+            }
+            return coords.map(() => 0);
+        }
+
+        async function getTemperaturesBulk(coords, depTime, speed, sampleInterval, totalDist) {
+            const temps = [];
+            const codes = [];
+            
+            let maxRetries = 5;
+            let baseDelay = 1000;
+            let data = null;
+
+            const lats = coords.map(c => c.lat).join(',');
+            const lngs = coords.map(c => c.lng).join(',');
+            const startDateStr = depTime.toISOString().split('T')[0];
+            const maxElapsedHours = totalDist / speed;
+            const maxArrivalDateTime = new Date(depTime.getTime() + maxElapsedHours * 3600000);
+            const endDateStr = maxArrivalDateTime.toISOString().split('T')[0];
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lngs}&hourly=temperature_2m,weather_code&timezone=Asia%2FTokyo&start_date=${startDateStr}&end_date=${endDateStr}`;
+
+            for (let attempt = 0; attempt < maxRetries; attempt++) {
+                try {
+                    const res = await fetch(url);
+                    
+                    if (res.status === 429 && attempt < maxRetries - 1) {
+                        let delay = baseDelay * Math.pow(2, attempt);
+                        screenLog(`[Weather API] 429 Too Many Requests. Retrying in ${delay}ms...`, false);
+                        await sleep(delay);
+                        continue;
+                    }
+
+                    if (!res.ok) {
+                        screenLog(`[Weather API Error] Forecast endpoint failure status: ${res.status}`, true);
+                        return { temperatures: coords.map(() => 20), codes: coords.map(() => 0) };
+                    }
+                    data = await res.json();
+                    break;
+                } catch (e) {
+                    if (attempt < maxRetries - 1) {
+                        let delay = baseDelay * Math.pow(2, attempt);
+                        await sleep(delay);
+                        continue;
+                    }
+                    screenLog(`[Weather API Error] Fetch bulk runtime crash: ` + e.message, true);
+                    return { temperatures: coords.map(() => 20), codes: coords.map(() => 0) };
+                }
+            }
+
+            if (!data) {
+                return { temperatures: coords.map(() => 20), codes: coords.map(() => 0) };
+            }
+
+            try {
+                for (let s = 0; s < coords.length; s++) {
+                    const targetDist = Math.min(s * sampleInterval, totalDist);
+                    const elapsedHours = targetDist / speed;
+                    const arrivalTime = new Date(depTime.getTime() + elapsedHours * 3600000);
+                    
+                    const diffMs = arrivalTime.getTime() - depTime.getTime();
+                    const diffHours = Math.floor(diffMs / 3600000);
+                    const baseHour = depTime.getHours();
+                    const targetIdx = baseHour + diffHours;
+
+                    let tVal = 20;
+                    let cVal = 0;
+                    const resData = Array.isArray(data) ? data[s] : data;
+                    if (resData && resData.hourly) {
+                        if (resData.hourly.temperature_2m && resData.hourly.temperature_2m[targetIdx] !== undefined) {
+                            tVal = resData.hourly.temperature_2m[targetIdx];
+                        }
+                        if (resData.hourly.weather_code && resData.hourly.weather_code[targetIdx] !== undefined) {
+                            cVal = resData.hourly.weather_code[targetIdx];
+                        }
+                    }
+                    temps.push(tVal);
+                    codes.push(cVal);
+                }
+                return { temperatures: temps, codes: codes };
+            } catch (e) {
+                screenLog(`[Weather API Error] Data mapping runtime crash: ` + e.message, true);
+                return { temperatures: coords.map(() => 20), codes: coords.map(() => 0) };
+            }
+        }
+
+        function runGISFilter(route) {
+            try {
+                screenLog("Running runGISFilter processing...");
+                const minDist = parseFloat(document.getElementById('gis-min-dist').value);
+                const maxDev = parseFloat(document.getElementById('gis-max-dev').value);
+                const routeLine = turf.lineString(route.coordinates.map(c => [c.lng, c.lat]));
+                const originPoint = turf.point([startPoint.lng, startPoint.lat]);
+
+                const markedChargers = [];
+
+                scData.forEach(sc => {
+                    if (!sc.lat || !sc.lng) return;
+                    const scPoint = turf.point([parseFloat(sc.lng), parseFloat(sc.lat)]);
+                    const distFromStart = turf.distance(originPoint, scPoint);
+                    const distFromRoute = turf.pointToLineDistance(scPoint, routeLine);
+
+                    let isMarked = false;
+                    if (distFromStart >= minDist && distFromRoute <= maxDev) {
+                        if (sc.AreaType === 'FamilyMart') {
+                            sc.marker.setStyle({ 
+                                color: '#009fdf',     
+                                weight: 3,            
+                                fillColor: '#00ff00', 
+                                radius: 8
+                            });
+                        } else {
+                            if (sc.AreaType === '7Eleven') {
+                                sc.marker.setStyle({ 
+                                    color: '#ff0000',     
+                                    weight: 3,            
+                                    fillColor: '#00ff00', 
+                                    radius: 8
+                                });
+                            } else {
+                                sc.marker.setStyle({ 
+                                    color: '#fff', 
+                                    fillColor: '#ff0000', 
+                                    radius: 8 
+                                });
+                            }
+                        }
+                        isMarked = true;
+                    } else {
+                        sc.marker.setStyle({ 
+                            color: '#ff00ff',
+                            weight: 2,  
+                            fillColor: '#fff', 
+                            radius: 5 
+                        });
+                    }
+
+                    if (isMarked) {
+                        markedChargers.push(sc);
+                    }
+                });
+
+                screenLog(`runGISFilter complete. Found ${markedChargers.length} qualified SC items within distance filters.`);
+                calculateMarkedChargersRoutes(markedChargers);
+            } catch (e) {
+                screenLog("Error inside runGISFilter structure: " + e.message, true);
+            }
+        }
+
+        async function calculateMarkedChargersRoutes(chargers) {
+            screenLog(`Triggering throttled sequential Sub-Routes calculation with waypoints for ${chargers.length} SC markers...`);
+            const tbody = document.getElementById('markers-summary-tbody');
+            tbody.innerHTML = '';
+            
+            if (chargers.length === 0) {
+                document.getElementById('markers-summary-display').style.display = 'none';
+                document.getElementById('toggle-markers').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('markers-summary-display').style.display = 'block';
+            document.getElementById('toggle-markers').style.display = 'block';
+
+            const speed = parseFloat(document.getElementById('target-speed').value);
+            const depTimeStr = document.getElementById('dep-time').value;
+            const depTime = new Date(depTimeStr);
+            const battFull = parseFloat(document.getElementById('batt-full').value);
+            const battBuff = parseFloat(document.getElementById('batt-buff').value);
+            const socStart = parseFloat(document.getElementById('soc-start').value);
+            const engine = getSelectedEngine();
+
+            let completedCount = 0;
+            const resultsList = [];
+
+            for (let i = 0; i < chargers.length; i++) {
+                const sc = chargers[i];
+                const targetLatLng = L.latLng(parseFloat(sc.lat), parseFloat(sc.lng));
+
+                await new Promise((resolveRoute) => {
+                    if (engine === 'google') {
+                        if (!googleMapsLoaded) {
+                            screenLog("Google Maps API is not loaded yet.", true);
+                            resolveRoute();
+                            return;
+                        }
+                        const directionsService = new google.maps.DirectionsService();
+                        const request = {
+                            origin: new google.maps.LatLng(startPoint.lat, startPoint.lng),
+                            destination: new google.maps.LatLng(endPoint.lat, endPoint.lng),
+                            waypoints: [{ location: new google.maps.LatLng(targetLatLng.lat, targetLatLng.lng), stopover: true }],
+                            travelMode: google.maps.TravelMode.DRIVING
+                        };
+
+                        const trafficChecked = document.getElementById('google-traffic-cb').checked;
+                        if (trafficChecked) {
+                            request.drivingOptions = {
+                                departureTime: new Date(),
+                                trafficModel: google.maps.TrafficModel.BEST_GUESS
+                            };
+                        }
+
+                        directionsService.route(request, async function(result, status) {
+                            if (status === google.maps.DirectionsStatus.OK) {
+                                const gRoute = result.routes[0];
+                                let detourTotalDistanceKm = 0;
+                                let detourTotalTimeSeconds = 0;
+                                gRoute.legs.forEach(leg => {
+                                    detourTotalDistanceKm += leg.distance.value / 1000;
+                                    detourTotalTimeSeconds += leg.duration.value;
+                                });
+
+                                const firstLeg = gRoute.legs[0];
+                                const scDistanceKm = firstLeg.distance.value / 1000;
+                                const scDurationSeconds = firstLeg.duration.value;
+                                const distanceIncreaseKm = Math.max(0, detourTotalDistanceKm - baseTotalDistanceKm);
+
+                                const leafCoords = [];
+                                gRoute.overview_path.forEach(latLng => {
+                                    leafCoords.push(L.latLng(latLng.lat(), latLng.lng()));
+                                });
+
+                                const subRoute = {
+                                    coordinates: leafCoords,
+                                    summary: {
+                                        totalDistance: detourTotalDistanceKm * 1000,
+                                        totalTime: detourTotalTimeSeconds
+                                    }
+                                };
+                                
+                                const coords = subRoute.coordinates;
+                                const totalDist = subRoute.summary.totalDistance / 1000;
+
+                                const sampleInterval = 50;
+                                const stepCount = Math.ceil(totalDist / sampleInterval);
+                                const sampleCoords = [];
+                                
+                                sampleCoords.push(coords[0]); 
+                                for (let s = 1; s <= stepCount; s++) {
+                                    const targetDist = Math.min(s * sampleInterval, totalDist);
+                                    const coordIdx = Math.floor((targetDist / totalDist) * (coords.length - 1));
+                                    sampleCoords.push(coords[coordIdx]);
+                                }
+
+                                const elev2 = await getElevationsBulk([coords[0], {lat: targetLatLng.lat, lng: targetLatLng.lng}]);
+                                const simulatedElevations = sampleCoords.map((_, idxElev) => {
+                                    if (sampleCoords.length <= 1) return elev2[0];
+                                    return elev2[0] + (elev2[1] - elev2[0]) * (idxElev / (sampleCoords.length - 1));
+                                });
+
+                                const weatherDataSub = await getTemperaturesBulk(sampleCoords, depTime, speed, sampleInterval, totalDist);
+                                const simulatedTemperatures = weatherDataSub.temperatures;
+
+                                try {
+                                    const response = await fetch('/api/simulation', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            coordinates: coords,
+                                            total_distance: totalDist,
+                                            target_speed: speed,
+                                            dep_time: depTimeStr,
+                                            batt_full: battFull,
+                                            batt_buff: battBuff,
+                                            soc_start: socStart,
+                                            elevations: simulatedElevations, 
+                                            temperatures: simulatedTemperatures
+                                        })
+                                    });
+
+                                    if (response.ok) {
+                                        const data = await response.json();
+                                        
+                                        let targetScDist = scDistanceKm;
+                                        let timeOffsetSeconds = scDurationSeconds;
+
+                                        let targetScArrivalSoc = socStart;
+                                        let minDelta = Infinity;
+
+                                        data.samples.forEach((sample) => {
+                                            const d = Math.abs(sample.dist - targetScDist);
+                                            if (d < minDelta) {
+                                                minDelta = d;
+                                                targetScArrivalSoc = sample.soc;
+                                            }
+                                        });
+
+                                        const arrivalDateTime = new Date(depTime.getTime() + timeOffsetSeconds * 1000);
+                                        const hh = String(arrivalDateTime.getHours()).padStart(2, '0');
+                                        const mm = String(arrivalDateTime.getMinutes()).padStart(2, '0');
+
+                                        resultsList.push({
+                                            name: sc.name,
+                                            areaType: sc.AreaType || '未設定',
+                                            dist: targetScDist, 
+                                            increase: distanceIncreaseKm,
+                                            timeStr: hh + ':' + mm, 
+                                            arrivalTimeMs: arrivalDateTime.getTime(),
+                                            ec: Math.round(data.avg_ec),
+                                            elev: (data.elev_energy / 1000).toFixed(2),
+                                            soc: Math.round(targetScArrivalSoc)
+                                        });
+                                    } else {
+                                        screenLog(`Google Sub-Route simulation compute failed response status: ${response.status}`, true);
+                                    }
+                                } catch (e) {
+                                    screenLog(`Google Sub-route parsing execution runtime crash: ` + e.message, true);
+                                }
+                            } else {
+                                screenLog(`Google sub-routing failure for SC [${sc.name}]: ` + status, true);
+                            }
+                            completedCount++;
+                            screenLog(`SC calculation progress: (${completedCount}/${chargers.length}) concluded.`);
+                            resultsList.sort((a, b) => a.arrivalTimeMs - b.arrivalTimeMs);
+
+                            tbody.innerHTML = '';
+                            resultsList.forEach(item => {
+                                const tr = document.createElement('tr');
+                                if (item.soc > 60 || item.soc < 5) {
+                                    tr.setAttribute('style', 'background-color: #f3f4f6; color: #9ca3af;');
+                                }
+                                tr.innerHTML = `
+                                    <td style="font-weight: bold;">${item.name}</td>
+                                    <td>${item.areaType}</td>
+                                    <td>${item.dist.toFixed(1)} <span style="color:#ef4444; font-size:10px;">(+${item.increase.toFixed(1)})</span></td>
+                                    <td>${item.timeStr}</td>
+                                    <td>${item.ec}</td>
+                                    <td>${item.elev}</td>
+                                    <td>${item.soc}%</td>
+                                `;
+                                tbody.appendChild(tr);
+                            });
+                            resolveRoute();
+                        });
+                    } else {
+                        const urlLeg1 = `https://router.project-osrm.org/route/v1/driving/${startPoint.lng},${startPoint.lat};${targetLatLng.lng},${targetLatLng.lat}?overview=full&geometries=geojson`;
+                        const urlLeg2 = `https://router.project-osrm.org/route/v1/driving/${targetLatLng.lng},${targetLatLng.lat};${endPoint.lng},${endPoint.lat}?overview=false`;
+
+                        Promise.all([
+                            fetch(urlLeg1).then(r => r.json()),
+                            fetch(urlLeg2).then(r => r.json())
+                        ]).then(async ([data1, data2]) => {
+                            if (data1.code === 'Ok' && data1.routes && data1.routes.length > 0) {
+                                const oRoute1 = data1.routes[0];
+                                const scDistanceKm = oRoute1.legs[0].distance / 1000;
+                                const scDurationSeconds = oRoute1.legs[0].duration;
+
+                                let leg2DistanceKm = 0;
+                                if (data2.code === 'Ok' && data2.routes && data2.routes.length > 0) {
+                                    leg2DistanceKm = data2.routes[0].legs[0].distance / 1000;
+                                }
+
+                                const detourTotalDistanceKm = scDistanceKm + leg2DistanceKm;
+                                const distanceIncreaseKm = Math.max(0, detourTotalDistanceKm - baseTotalDistanceKm);
+
+                                const fullCoords = oRoute1.geometry.coordinates.map(coord => L.latLng(coord[1], coord[0]));
+                                const leafCoords = [];
+                                let currentDist = 0;
+                                
+                                leafCoords.push(fullCoords[0]);
+                                for (let c = 1; c < fullCoords.length; c++) {
+                                    const p1 = turf.point([fullCoords[c-1].lng, fullCoords[c-1].lat]);
+                                    const p2 = turf.point([fullCoords[c].lng, fullCoords[c].lat]);
+                                    currentDist += turf.distance(p1, p2);
+                                    
+                                    leafCoords.push(fullCoords[c]);
+                                    if (currentDist >= scDistanceKm) {
+                                        break;
+                                    }
+                                }
+
+                                const subRoute = {
+                                    coordinates: leafCoords,
+                                    summary: {
+                                        totalDistance: scDistanceKm * 1000, 
+                                        totalTime: scDurationSeconds       
+                                    }
+                                };
+
+                                const coords = subRoute.coordinates;
+                                const totalDist = subRoute.summary.totalDistance / 1000;
+
+                                const sampleInterval = 50;
+                                const stepCount = Math.ceil(totalDist / sampleInterval);
+                                const sampleCoords = [];
+                                
+                                sampleCoords.push(coords[0]); 
+                                for (let s = 1; s <= stepCount; s++) {
+                                    const targetDist = Math.min(s * sampleInterval, totalDist);
+                                    const coordIdx = Math.floor((targetDist / totalDist) * (coords.length - 1));
+                                    sampleCoords.push(coords[coordIdx]);
+                                }
+
+                                const elev2 = await getElevationsBulk([coords[0], {lat: targetLatLng.lat, lng: targetLatLng.lng}]);
+                                const simulatedElevations = sampleCoords.map((_, idxElev) => {
+                                    if (sampleCoords.length <= 1) return elev2[0];
+                                    return elev2[0] + (elev2[1] - elev2[0]) * (idxElev / (sampleCoords.length - 1));
+                                });
+
+                                const weatherDataSub = await getTemperaturesBulk(sampleCoords, depTime, speed, sampleInterval, totalDist);
+                                const simulatedTemperatures = weatherDataSub.temperatures;
+
+                                try {
+                                    const response = await fetch('/api/simulation', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            coordinates: coords,
+                                            total_distance: totalDist,
+                                            target_speed: speed,
+                                            dep_time: depTimeStr,
+                                            batt_full: battFull,
+                                            batt_buff: battBuff,
+                                            soc_start: socStart,
+                                            elevations: simulatedElevations, 
+                                            temperatures: simulatedTemperatures
+                                        })
+                                    });
+
+                                    if (response.ok) {
+                                        const simData = await response.json();
+                                        const targetScArrivalSoc = simData.final_soc; 
+
+                                        const arrivalDateTime = new Date(depTime.getTime() + scDurationSeconds * 1000);
+                                        const hh = String(arrivalDateTime.getHours()).padStart(2, '0');
+                                        const mm = String(arrivalDateTime.getMinutes()).padStart(2, '0');
+
+                                        resultsList.push({
+                                            name: sc.name,
+                                            areaType: sc.AreaType || '未設定',
+                                            dist: scDistanceKm, 
+                                            increase: distanceIncreaseKm,
+                                            timeStr: hh + ':' + mm, 
+                                            arrivalTimeMs: arrivalDateTime.getTime(),
+                                            ec: Math.round(simData.avg_ec),
+                                            elev: (simData.elev_energy / 1000).toFixed(2),
+                                            soc: Math.round(targetScArrivalSoc)
+                                        });
+                                    } else {
+                                        screenLog(`OSRM Sub-Route simulation compute failed response status: ${response.status}`, true);
+                                    }
+                                } catch (e) {
+                                    screenLog(`OSRM Sub-route parsing execution runtime crash: ` + e.message, true);
+                                }
+                            } else {
+                                screenLog(`OSRM API returned non-OK code for SC [${sc.name}]: ${data1.code}`, true);
+                            }
+                        })
+                        .catch(err => {
+                            screenLog(`OSRM native fetch failure for SC [${sc.name}]: ` + err.message, true);
+                        })
+                        .finally(() => {
+                            completedCount++;
+                            screenLog(`SC calculation progress: (${completedCount}/${chargers.length}) concluded.`);
+                            resultsList.sort((a, b) => a.arrivalTimeMs - b.arrivalTimeMs);
+
+                            tbody.innerHTML = '';
+                            resultsList.forEach(item => {
+                                const tr = document.createElement('tr');
+                                if (item.soc > 60 || item.soc < 5) {
+                                    tr.setAttribute('style', 'background-color: #f3f4f6; color: #9ca3af;');
+                                }
+                                tr.innerHTML = `
+                                    <td style="font-weight: bold;">${item.name}</td>
+                                    <td>${item.areaType}</td>
+                                    <td>${item.dist.toFixed(1)} <span style="color:#ef4444; font-size:10px;">(+${item.increase.toFixed(1)})</span></td>
+                                    <td>${item.timeStr}</td>
+                                    <td>${item.ec}</td>
+                                    <td>${item.elev}</td>
+                                    <td>${item.soc}%</td>
+                                `;
+                                tbody.appendChild(tr);
+                            });
+                            resolveRoute();
+                        });
+                    }
+                });
+                
+                await sleep(60); 
+            }
+            screenLog(`Throttled sequential calculations successfully finalized for all ${chargers.length} elements.`);
+        }
+
+        document.getElementById('recalc-btn').onclick = () => {
+            screenLog("Manual Recalculate button clicked.");
+            if (startPoint && endPoint) {
+                calculateRoute();
+            } else {
+                screenLog("Recalculate failed: startPoint or endPoint is missing.", true);
+            }
+        };
+
+        document.getElementsByName('routing-engine').forEach(radio => {
+            radio.addEventListener('change', () => {
+                screenLog("Routing engine selection changed. Calculation will not trigger automatically.");
+            });
+        });
+
+        document.getElementById('toggle-sidebar').onclick = function() {
+            const sidebar = document.getElementById('sidebar');
+            const btn = document.getElementById('toggle-sidebar');
+            sidebar.classList.toggle('minimized');
+            if (sidebar.classList.contains('minimized')) {
+                btn.textContent = "▶";
+                btn.style.left = "10px";
+            } else {
+                btn.textContent = "◀";
+                btn.style.left = "325px";
+            }
+        };
+
+        document.getElementById('toggle-debug').onclick = function() {
+            const logger = document.getElementById('debug-logger');
+            const btn = document.getElementById('toggle-debug');
+            logger.classList.toggle('minimized');
+            if (logger.classList.contains('minimized')) {
+                btn.textContent = "Log 展開";
+            } else {
+                btn.textContent = "Log 閉じる";
+            }
+        };
+
+        document.getElementById('toggle-soc').onclick = function() {
+            const soc = document.getElementById('soc-display');
+            const btn = document.getElementById('toggle-soc');
+            soc.classList.toggle('minimized');
+            if (soc.classList.contains('minimized')) {
+                btn.textContent = "◀";
+            } else {
+                btn.textContent = "▶";
+            }
+        };
+
+        document.getElementById('toggle-markers').onclick = function() {
+            const markers = document.getElementById('markers-summary-display');
+            const btn = document.getElementById('toggle-markers');
+            markers.classList.toggle('minimized');
+            if (markers.classList.contains('minimized')) {
+                btn.textContent = "◀";
+            } else {
+                btn.textContent = "▶";
+            }
+        };
+
+        window.onload = () => {
+            initMap();
+            fetchData();
+        };
+    </script>
+</body>
+</html>

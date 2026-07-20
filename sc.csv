@@ -1,0 +1,153 @@
+Site Name,Street Address,City,State,Zip,Country,GPS,Elev,Stalls,kW,Status,Opened,AreaType
+"Fukuoka, Japan - Kashiihama",3-ch_me-1 Kashiihama,Higashi Ward,Fukuoka,813-0016,Japan,"33.658875, 130.430649",2,4 V4___,250,,2026/7/17,ION
+"Motosu, Japan - Mitsuhashi",1100 Mitsuhashi,Motosu,Gifu,501-0497,Japan,"35.45682, 136.671915",23,4 V4___,250,,2026/7/15,Mall
+"Kawasaki, Japan - Shibokuchi",496 Shibokuchi,Kawasaki,Kanagawa,213-0023,Japan,"35.572665, 139.631967",11,4 V4___,250,,2026/7/11,7Eleven
+"Funabashi, Japan - Hamacho",2-2-7 Hamacho,Funabashi,Chiba,273-0012,Japan,"35.687703, 139.993915",4,6 V4__,250,,2026/7/1,Mall
+Fuchu - Osu,2-1-1 Osu,Fuch≈´,Tokyo,735-0021,Japan,"34.393814, 132.49741",3,4 V4,250,,2026/4/27,ION
+Setagaya-ku - Tamagawa,3-38-1 Tamagawa,Tokyo,Tokyo,158-0094,Japan,"35.616331, 139.623593",15,4 V4,250,,2026/4/27,FamilyMart
+Ota-ku - Kamiikedai,4-21-10 Kamiikedai,Ota-ku,Tokyo,145-0064,Japan,"35.597944, 139.702852",32,4 V4,250,,2026/3/5,Restran
+Naha - Ameku,1068-9 Ameku,Naha,Okinawa,900-0005,Japan,"26.232328, 127.685253",32,3 V4,250,,2026/2/27,FamilyMart
+Tokoname - Nijinooka,3-chome Nijinooka,Tokoname,Aichi,479-0849,Japan,"34.901398, 136.838638",14,4 V4,250,,2026/2/20,HomeCenter
+Nishinomiya - Ashiharacho,9-23 Ashiharacho,Nishinomiya,Hyogo,662-0842,Japan,"34.741661, 135.353569",7,4 V4,250,,2026/1/30,Electronics
+Takasaki - Munadakamachi,1400 Munadakamachi,Takasaski,Gunma,370-3521,Japan,"36.392248, 139.007691",141,4 V4,250,,2026/1/7,ION
+Fujisawa - Inari,1-9-29 Inari,Fujisawa,Kanagawa,251-0862,Japan,"35.352073, 139.467016",45,4 V4,250,,2025/12/17,FamilyMart
+Urayasu - Higashino,1-3-1 Higashino,Urayasu,Chiba,279-0042,Japan,"35.652774, 139.898546",4,4 V4,250,,2025/12/16,FamilyMart
+Fuchu - Nishifucho,4-1-1 Nishifucho,Fuch≈´,Tokyo,183-0031,Japan,"35.676436, 139.452968",68,4 V4,250,,2025/12/16,FamilyMart
+Kyoto - Yamashina-ku Otowamaedacho,50-5 Yamashina-ku Otowamaedacho,Kyoto,Kyoto,607-8067,Japan,"34.986812, 135.828233",74,4 V4,250,,2025/9/26,FamilyMart
+Odawara - Nakazato,296-1 Nakazato,Odawara,Kanagawa,250-0872,Japan,"35.28336, 139.189042",12,4 V4,250,,2025/9/12,Electronics
+Yamaguchi ,4-8-17 Yoshikinakahigashi,Yamaguchi,Yamaguchi,,Japan,"34.162678, 131.441111",18,4 V4,250,,2025/8/8,Fitness
+Narita Airport ,1-2 Shibayamamachi Osato,Chiba,Chiba,289-1603,Japan,"35.750068, 140.400618",42,4 V4,250,,2025/8/8,FamilyMart
+Tokyo - Komazawa,4-6 Fukasawa,Tokyo,Tokyo,158-0081,Japan,"35.622309, 139.658467",42,6 V3,250,,2025/7/2,Housing
+Higashi Kurume ,"5-17-62 MInamisawa Higashi Kurume, Tokyo",Tokyo,Tokyo,203-0023,Japan,"35.745139, 139.525792",67,4 V3,250,,2025/6/30,ION
+Akita ,2-1-4 Goshonoyumoto,Akita,Akita,010-1415,Japan,"39.658647, 140.172512",43,4 V3,250,,2025/6/20,FamilyMart
+Tomakomai ,"1-ch≈çme-14-14 Kasugach≈ Tomakomai, Hokkaido",Tomakoma,Hokkaido,053-0031,Japan,"42.649133, 141.604827",10,4 V3,250,,2025/6/19,FamilyMart
+Hachioji ,1-21-8 Akatsuki cho,Hachi≈çji,Tokyo,192-0043,Japan,"35.669685, 139.331468",116,4 V3,250,,2025/5/16,FamilyMart
+Tokyo - Takanawa,2-21 Takanawa Minato-ku,Tokyo,Tokyo,108-0074,Japan,"35.636836, 139.739731",6,8 V4,250,,2025/5/16,
+Fukuoka - Nishi,3-1-10 Toyohama Nishi Ward,Fukuoka,Hokkaido,819-0014,Japan,"33.589073, 130.332871",7,4 V3,250,,2025/3/21,ION
+Atamiajiro ,"9-13 Shimotaga Atami, Shizuoka",Atami,Shizuoka,413-0102,Japan,"35.044458, 139.085916",6,4 V3,250,,2025/2/28,FamilyMart
+Saitama - Urawa Misono,"5-45-19 Misono, Midori-ku Saitama",Yono,Saitama,336-0967,Japan,"35.894454, 139.732479",6,3 V3,250,,2025/2/27,FamilyMart
+Yokohama - Machida,9-50 Kamitsurumahoncho,Machida,Tokyo,252-0318,Japan,"35.519364, 139.453851",85,6 V3,250,,2024/12/24,Housing
+Rinkusennan ,"3-12 Minamihama, Rinku Sennan",Rinku Senna,Osaka,590-0535,Japan,"34.381525, 135.26703",5,6 V3,250,,2024/12/20,ION
+Sakai ,Tonshinkachi No. 1,Sakai,Osaka,590-0905,Japan,"34.595296, 135.480941",6,6 V3,250,,2024/11/15,ION
+Sakata ,1-7-20 Azumacho,Sakata,Yamagata,998-0875,Japan,"38.906533, 139.863625",5,4 V3,250,,2024/10/29,FamilyMart
+Tokyo - Shimomaruko,2-33-1 Shimomaruko,Tokyo,Tokyo,146-0092,Japan,"35.561583, 139.688337",5,8 V4,250,,2024/10/21,
+Ensh≈´-Morimach ,Plenty Park Wuzhou Mori Town,Morimach,Shizuoka,437-0221,Japan,"34.82699, 137.906227",76,12 V4,250,,2024/10/17,SA PA Side
+Takayama ,3-326 Kamiokamotomachi,Takayama,Gifu,506-0055,Japan,"36.138076, 137.244045",578,4 V3,250,,2024/7/22,FamilyMart
+Sendai - Miyagino,"2-2-13 Ogimachi, Miyagino-ku",Sendai,Miyagi,983-0034,Japan,"38.269099, 140.946631",3,4 V3,250,,2024/7/5,Tesla Center
+Chigasaki ,254-3 Nakajima,Chigasaki,Kanagawa,253-0073,Japan,"35.332747, 139.37596",5,4 V3,250,,2024/7/3,FamilyMart
+Nagoya - Kita,40 Nishi-ku Futakatacho,Nagoya,Aichi,452-0817,Japan,"35.224651, 136.885465",6,8 V3,250,,2024/6/25,Mall
+Tokyo - Akihabara,"4-14-1 Sotokanda, Chiyoda-ku, Tokyo",Tokyo,Tokyo,101-0021,Japan,"35.700486, 139.772724",5,4 V3,250,,2024/6/10,Parking
+Yokohama - Kohoku,"1-1-47 Takatanishi, Kohoku-ku",Yokohama,Kanagawa,223-0066,Japan,"35.549445, 139.618465",7,6 V3,250,,2024/5/30,ION
+Osaka - Tsurumi,4-17-1 Tsurumi,Osaka,Osaka,538-0053,Japan,"34.705007, 135.567725",3,4 V3,250,,2024/5/21,ION
+Nanki ,2064-1 Shinjo-cho,Tanabe,Wakayama,646-0011,Japan,"33.718257, 135.4032",3,4 V2,130,,2024/5/20,FamilyMart
+Tokyo - Suginami,"2-16-20 Shimizu, Suginami, Tokyo",Tokyo,Tokyo,167-0033,Japan,"35.714442, 139.616663",45,4 V3,250,,2024/4/25,
+Yokosuka ,3-21-4 Heisei-cho,Yokohama,Kanagawa,231-0821,Japan,"35.274781, 139.684435",5,6 V3,250,,2024/3/29,Mall
+Yokohama - Honmoku,"7-1 3rd Avenue, Honmokuhara, Naka Ward",Yokohama,Kanagawa,231-0821,Japan,"35.426343, 139.666617",11,4 V3,250,,2024/3/26,ION
+Tokyo - Ikebukuro,"1-6-1 Nishi-Ikebukuro, Toshima-ku",Tokyo,Tokyo,176-0013,Japan,"35.728343, 139.707703",35,4 V3,250,,2024/3/25,
+Nasu ,593-8 Takakuotsu,Nasu,Tochigi,325-0303,Japan,"37.040382, 140.013735",470,6 V3,250,,2024/3/18,RoadsideSt
+Nagoya - Noritake,"3-1-17 Noritake Shinmachi, Nishi-ku",Nagoya,Aichi,451-0051,Japan,"35.179302, 136.879426",4,8 V3,250,,2024/3/18,ION
+Tokyo - Roppongi P2,"6-10-1 Roppongi, Minato-ku",Tokyo,Tokyo,106-6108,Japan,"35.660371, 139.729228",36,4 V3,250,,2024/3/13,
+≈åita ,2-1 Koen-dori Nishi,≈åita,≈åita,870-0174,Japan,"33.195441, 131.659776",74,4 V2,150,,2024/3/7,ION
+Tokyo - Roka Koen,"Hinomaru Kotsu Setagaya Office, 1-1-18 Minamikarasuyama, Setagaya-ku",Tokyo,Tokyo,157-0062,Japan,"35.667364, 139.613018",46,12 V3,250,,2024/2/14,
+Mie Kawagoe ,175 Kitafukusaki,"Mie District, Kawagoe",Mie,510-8125,Japan,"35.028329, 136.677907",2,6 V3,250,,2024/1/10,HomeCenter
+Tokyo - Toyotama,"3-2-3 Toyotamaka, Nerima-ku",Tokyo,Tokyo,176-0013,Japan,"35.732631, 139.656517",39,4 V3,250,,2023/12/26,FamilyMart
+Kobe - Sannomiya,"3-2-23 Yahatadori, Chuo-ku",Kobe,Hyogo,651-0085,Japan,"34.69152, 135.197883",8,6 V3,250,,2023/12/20,Electronics
+Kitakyushu ,"4-1-1 Higashida, Yahatahigashi-ku, Kitakyushu-shi",Kitakyushu,Fukuoka,805-0071,Japan,"33.874445, 130.810591",5,6 V3,250,,2023/12/19,OUTLET
+Kawasaki - Kanagawa Tomei (SC),"6-10-1 Dobashi, Miyamae-ku",Kawasaki,Kanagawa,216-0005,Japan,"35.588071, 139.571643",41,3 V3,250,,2023/12/18,Tesla Center
+Matsumoto ,3-1-8 Muraicho Minami,Matsumoto,Nagano,399-0036,Japan,"36.174435, 137.960289",629,4 V3,250,,2023/12/15,FamilyMart
+Aomori ,"Aomori Tonyamachi, 2-3-4",Aomori,Aomori,030-0131,Japan,"40.786458, 140.762688",10,3 V3,250,,2023/12/15,FamilyMart
+Ibaraki ,8-30 Matsugahonmachi,Ibaraki,Osaka,567-0033,Japan,"34.809105, 135.558259",17,6 V3,250,,2023/12/1,Parking
+Tokyo - Senju,"1-12-21 Sekihara, Adachi-ku",Tokyo,Tokyo,120-0011,Japan,"35.763609, 139.78971",4,6 V3,250,,2023/11/10,
+Fukuoka - Hakataeki Minami,"6-5-27 Hakata Station Minami, Hakata Ward",Fukuoka,Fukuoka,321-2116,Japan,"33.577609, 130.432383",9,4 V3,250,,2023/10/31,FamilyMart
+Utsunomiya ,"7-3 Tokujirocho, Utsunomiya City, Tochigi Prefecture",Utsunomiya,Ch≈´bu,321-2116,Japan,"36.632139, 139.847422",182,6 V3,250,,2023/10/30,FamilyMart
+Nagoya-MinamiOdaka,"4-401 Minami Odaka, Midori Ward",Nagoya,Aichi,459-8016,Japan,"35.057015, 136.941067",11,4 V3,250,,2023/10/14,FamilyMart
+Nagoya - Jingu,"4-7-27 Jingu, Atsuta-ku",Nagoya,Aichi,456-0031,Japan,"35.120756, 136.9115",4,4 V3,250,,2023/9/29,
+Chiba - Kaihin Makuhari,"1-3 Hibino, Mihama-ku",Chiba,Chiba,261-0021,Japan,"35.651334, 140.045423",5,6 V3,250,,2023/9/29,ION
+Karuizawa ,"Karuizawa Prince Shopping Plaza P3, Karuizawa, Karuizawa-cho, Kitasaku-gun",Karuizawa,Nagano,389-0102,Japan,"36.339564, 138.632824",939,4 V3,250,,2023/9/29,OUTLET
+Saitama - Omiya,"5-8-40 Enami, Chuo-ku",Saitama,Saitama,338-0007,Japan,"35.893598, 139.607375",15,4 V2,150,,2023/9/29,
+Hadano ,692-1 Nishi-Otake,Hadano,Kanagawa,257-0012,Japan,"35.35612, 139.235696",103,4 V3,250,,2023/9/26,FamilyMart
+Kaizuka ,391-1 Kose,Kaizuka,Osaka,597-0021,Japan,"34.448579, 135.371387",13,3 V3,250,,2023/9/21,Tesla Service
+Yokohama - Aoba,"1-2 Moegino, Aoba Ward",Yokohama,Kanagawa,227-0044,Japan,"35.545422, 139.525469",51,6 V3,250,,2023/9/17,Mall
+Hamamatsu - Ichino,"HamamatsuSuwa, Tennocho-aza, Higashi-ku1981-3 Higashi Ward",Hamamatsu,Shizuoka,435-0052,Japan,"34.739214, 137.764617",10,6 V3,250,,2023/9/6,ION
+Tsurugashima ,"2213 Oaza Azuori, Tsurugashima, Suneori 2131",Tsurugashima,Saitama,350-2213,Japan,"35.944331, 139.385688",40,4 V3,250,,2023/8/25,FamilyMart
+Fukuoka - Nakasu Kawabata,"Fukuoka Shimokawabata, Hakata-ku 3-1",Fukuoka,Fukuoka,812-0027,Japan,"33.595642, 130.405462",15,3 Urban,72,,2023/8/23,Mall
+Osaka - Uehonmachi,Tennoji-ku Uehonmachi 6-1-55,Osaka,Osaka,543-0001,Japan,"34.665564, 135.52243",18,8 V3,250,,2023/8/6,Close
+Misato ,480 Kobo Misato,Misato,Saitama,341-0026,Japan,"35.835607, 139.879029",5,6 V3,250,,2023/8/6,
+Yokohama - MinatoMirai,"1-2 Moegino, Aoba-ku",Yokohama,Kanagawa,220-0012,Japan,"35.457801, 139.626014",6,6 V3,250,,2023/7/10,Parking
+Tokyo - Ariake,"2 Chome-1-8 Ariake, Koto City",Tokyo,Tokyo,135-0063,Japan,"35.637985, 139.792432",2,8 V3,250,,2023/7/1,Mall
+Toyota ,6-17-1 Higashi Shinmachi,Toyota,Aichi,471-0045,Japan,"35.078648, 137.125103",52,8 V3,250,,2023/6/29,Mall
+Iida ,456 Kanaeisshiki,Iida,Nagano,395-0805,Japan,"35.499941, 137.816572",512,4 V3,250,,2023/6/29,ION
+Takatsuki ,3-47-2 Haginosho,Takatsuki,Osaka,569-8567,Japan,"34.858101, 135.645188",9,8 V3,250,,2023/6/29,ION
+Tokorozawa ,1130-1 Sakanoshita,Tokorozawa,Saitama,359-0012,Japan,"35.810705, 139.531962",45,4 V3,250,,2023/6/29,FamilyMart
+Taki ,Taki-gun Takicho 672-1,Taki,Mie,519-2170,Japan,"34.460963, 136.514477",124,4 V3,250,,2023/6/23,VISON
+Hitachinaka ,"Hitachinaka, Shinkocho 34-2",Hitachinaka,Ibaraki,312-0005,Japan,"36.408418, 140.585067",33,6 V3,250,,2023/6/14,HomeCenter
+Hashimoto ,"2-10 Oyama-cho, Midori-ku",Sagamihara,Kanagawa,252-0146,Japan,"35.589132, 139.350071",139,4 V3,250,,2023/6/13,
+Saitama - Yono,"Saitama Honmachinishi, Chuo-ku5-2-9",Yono,Saitama,338-0004,Japan,"35.890806, 139.614944",17,8 V3,250,,2023/6/2,ION
+Kashihara ,"Aeon Mall, 7-20-1 Magarigawacho",Kashihara,Nara,634-0837,Japan,"34.506752, 135.761431",62,4 V3,250,,2023/5/23,ION
+Okayama ,"7-19 Nishikicho, Kita Ward",Okayama,Okayama,700-0902,Japan,"34.663067, 133.920872",3,4 V3,250,,2023/4/28,Parking
+Shizuoka ,"1-2 Miyamotocho, Suruga Ward",Shizuoka,Shizuoka,422-8065,Japan,"34.967395, 138.381732",19,6 V3,250,,2023/4/5,
+Kagoshima ,"7 Tokaicho, Kagoshima City, Kagoshima Prefecture 891-0115",Kagoshima,Kagoshima,891-0115,Japan,"31.527222, 130.534176",4,6 V3,250,,2023/3/28,ION
+Miyazaki ,"3-94-1 Nakamura Nishi, Miyazaki City, Miyazaki Prefecture 880-0905",Miyazaki,Miyazaki,880-0905,Japan,"31.895677, 131.416888",7,4 V3,250,,2023/3/26,Electronics
+Tokyo - Itabashi Maeno,"4-21-22 Maenocho, Itabashi-ku",Tokyo,Tokyo,174-0063,Japan,"35.770672, 139.691216",16,4 V3,250,,2023/3/26,ION
+Tokyo - Yaesu,"B3, 2-2-1 Yaesu, Chuo-ku",Tokyo,Tokyo,104-0028,Japan,"35.679264, 139.76922",7,4 V3,250,,2023/3/18,Parking
+Atsugi ,3005 Okada,Atsugi,Kanagawa,243-0021,Japan,"35.422859, 139.35816",17,8 V3,250,,2023/3/2,Electronics
+Oi Matsuda ,"325-1 Kaneko Nakanomachi, Ashigarakami-gun",Ashigarakami,Kanagawa,258-0019,Japan,"35.337778, 139.15185",54,6 V3,250,,2023/3/2,Electronics
+Itami - Konyo,4-1-1 Ikejiri,Itami,Hyogo,664-0027,Japan,"34.785125, 135.383373",26,8 V3,250,,2023/2/28,ION
+Fuji River ,1488-1 Iwabuchi,Fuji City,Shizuoka,421-3305,Japan,"35.162258, 138.617409",51,4 V3,250,,2023/2/16,SA PA Side
+Tokyo - Setagaya Kinuta,"1-16-6 Kinuta, Setagaya-ku",Tokyo,Tokyo,157-0073,Japan,"35.636614, 139.619687",39,6 V3,250,,2023/1/24,Electronics
+Chiba - Inage,"307-1 Naganuma-cho, Iname-ku, Chiba-shi, Chiba Prefecture 263-0005",Chiba,Chiba,263-0005,Japan,"35.655602, 140.118422",27,8 V3,250,,2023/1/17,Tesla Center
+Kasugai ,2-3 Minoucho,Kasugai,Aichi,486-0917,Japan,"35.239016, 136.942448",18,4 V3,250,,2022/12/29,TSUTAYA
+Kashiwanoha ,227-1 Wakashiba,Kashiwa,Chiba,227-0871,Japan,"35.897668, 139.954662",16,4 V3,250,,2022/12/20,TSUTAYA
+Kobe - Kita,"1-16-1 Nishiyama, Kita-ku",Kobe,Hyogo,651-1305,Japan,"34.835567, 135.217935",7,6 V3,250,,2022/12/16,Cafe
+Yaizu ,"Yaizu Fish Center, 4-13-7 Yakusu, Yaizu",Yaizu,Shizuoka,425-0091,Japan,"34.880012, 138.302483",7,6 V3,250,,2022/12/13,
+Matsuyama ,6-1-42 Higashiishii,Matsuyama,Ehime,790-0932,Japan,"33.809437, 132.779791",26,4 Urban,72,,2022/10/17,
+Tokyo - Chofu,Super Sports Xebio Chofu Tokyo Stadium front store 1-34-17 Tobitakyu,Chofu,Tokyo,182-0036,Japan,"35.6630529286, 139.5250189037",45,4 Urban,72,,2022/9/30,SportsShop
+Tokyo - Shinjuku,2-4-1 Nishi-Shinjuku,Shinjuku,Tokyo,160-0023,Japan,"35.688105, 139.693364",39,4 V3,250,,2022/9/30,
+Kyoto - Shijo,"A PIT Autobacs, 1 Saiin Yasuzukacho, Ukyo Ward",Kyoto,Kyoto,615-0051,Japan,"35.003289, 135.720410",33,6 V3,250,,2022/9/16,
+Takamatsu ,2141-2 Fushiishi-cho,Takamatsu,Kagawa,761-8071,Japan,"34.309423, 134.061538",13,4 V3,250,,2022/7/6,
+Osaka - Omigachi,"2 Suehiro-cho, Kita-ku",Osaka,Osaka,530-0053,Japan,"34.70162, 135.51026",5,6 V3,250,,2022/6/24,Parking
+Kawasaki ,"Lazona Kawasaki 72-1 Horikawa-cho, Ko-ku",Kawasaki,Kanagawa,212-0013,Japan,"35.534495, 139.69461",6,3 V3,250,,2022/6/24,Mall
+Toyama ,1-8-17 Marunouchi,Toyama,Toyama,930-0085,Japan,"36.692628, 137.20812",8,4 Urban,72,,2022/3/28,Parking
+Fukui ,1-303 Shinbokita,Fukui,Fukui,910-0838,Japan,"36.086031, 136.250467",11,4 V3,250,,2022/2/12,
+Sapporo-Odori ,"1 Chome Odorihigashi, Chuo Ward",Sapporo,Hokkaido,060-0041,Japan,"43.061975, 141.358263",24,4 V3,250,,2022/2/4,
+Kochi ,"Arakawa Electric, 6-19 Takasone",Kochi,Kochi,780-0071,Japan,"33.571591, 133.554967",2,4 Urban,72,,2022/1/20,
+Yamagata ,"Cybele Factory Maison 2-3-1, Zaomatsugaoka",Yamagata,Yamagata,990-2338,Japan,"38.193159, 140.311278",149,4 V3,250,,2022/1/15,Parking
+Kobe - Mikage,"3-2-1 Mikage Nakamachi, Higashinada Ward",Kobe,Hyogo,658-0054,Japan,"34.715574, 135.255163",16,4 V3,250,,2021/12/31,Mall
+Koriyama ,Fruit Peaks Koriyama Cosmos Street Store 3-174-1 Tsutsumi,Koriyama,Fukushima,963-0205,Japan,"37.395795, 140.332708",253,4 V3,250,,2021/12/31,Cafe
+Kanazawa ,"Kanazawa Beans Meibundo, 5-158 Kuratsuki",Kanazawa,Ishikawa,920-8203,Japan,"36.599028, 136.624141",3,4 V3,250,,2021/12/24,BookStore
+Tsukuba ,4372 Shimana,Tsukuba,Ibaraki,300-2655,Japan,"36.058524, 140.061221",15,4 V3,250,,2021/12/10,Restran
+Tokyo - Hibiya,"B2F 2-1-1 Uchisaiwai-cho, Chiyoda-ku",Tokyo,Tokyo,100-0011,Japan,"35.67084836, 139.75278306",7,4 V3,250,,2021/10/21,Parking
+Tottori ,503 Sakaemachi,Tottori,Tottori,680-0831,Japan,"35.49702496, 134.22791351",7,4 V3,250,,2021/10/3,Parking
+Niigata ,"33-1 Seigoro, Chuo-ku",Niigata,Niigata,520-2101,Japan,"37.87894306, 139.06062177",2,4 V3,250,,2021/10/1,Studium
+Otsu ,Promenade Aoyama 5-13-1 Aoyama,Otsu,Shiga,520-2101,Japan,"34.9785003, 135.96920831",138,4 V3,250,,2021/9/25,Grocery
+Osaka - Tennoji,"1-3 Chausuyama-cho, Tennoji-ku",Osaka,Osaka,543-0063,Japan,"34.65201823, 135.51297516",20,5 V3,250,,2021/9/23,FamilyMart
+Kumamoto ,"6-6-1 Sakuragi, Higashi-ku",Kumamoto,Kumamoto,861-2101,Japan,"32.79029198, 130.78112678",27,4 V3,250,,2021/9/11,Mall
+Tokyo - Daikanyama,"Daikanyama T-Site, 16-15 Sarugakucho, Shibuya-ku",Tokyo,Tokyo,150-0033,Japan,"35.64908568, 139.69961302",36,4 V3,250,,2021/7/16,TSUTAYA
+Hakodate ,85-1 Ishikawa-cho,Hakodate,Hokkaido,041-0802,Japan,"41.83071, 140.73577",33,4 V3,250,,2021/7/1,FamilyMart
+Matsudo ,2-8-1 Hachigasaki,Matsudo,Chiba,270Ω∞0023,Japan,"35.81791098, 139.9340663",15,4 V3,250,,2021/7/1,Mall
+Iga ,2756-104 Saimyoji,Iga,Mie,518-0809,Japan,"34.75614597, 136.15761077",179,4 V3,250,,2021/6/25,
+Shonan ,1-3-1 Tsujidojindai,Fujisawa,Kanagawa,251-0041,Japan,"35.3376820682, 139.4454811676",14,2 V2,125,,2021/4/6,Mall
+Tokyo - Akasaka,"1-12-33 Akasaka, Minato-ku",Minato,Tokyo,107-0052,Japan,"35.668171, 139.740384",18,4 V2,125,,2021/3/22,HOTEL
+Kawaguchi ,1-ch≈çme-7 Sakashitach≈,Kawaguchi,Saitama,334-0003,Japan,"35.832459, 139.735628",7,4 V3,250,,2020/12/11,Housing
+Nagoya - Hoshigaoka,"16-50 Hoshigaoka Motomachi, Chikusa Ward Nagoya Aichi",Nayoga-Shi,Aichi,464-0802,Japan,"35.160779, 136.984593",62,8 Urban,72,,2020/7/3,Parking
+Osaka - Toyonaka,1-1-20 Kamitsujima,Osaka,Osaka,561-0843,Japan,"34.757218, 135.461799",7,8 V2,150,,2020/3/31,Tesla Service
+Hiroshima ,"1-ch≈çme-1 Sh≈çk≈ Center, Nishi-ku",Hiroshima,Hiroshima,733-0833,Japan,"34.372844, 132.404382",6,8 Urban,72,,2020/2/15,Mall
+Tokyo - Tokyo Bay,"2-7-20 Shinonome, Koto-ku",Tokyo,Tokyo,135-0062,Japan,"35.642064, 139.803477",3,8 Urban,72,,2019/10/2,AutoBacks
+Naruto ,"Moana Coast 186-16 Takasago, Tosadomariura, Naruto-cho, Naruto-shi",Naruto,Tokushima,772-0053,Japan,"34.201273, 134.624752",6,8 V2,130,,2019/6/27,HOTEL
+Kyoto ,"Higashishiokoji Shimoru Torimecho, Shimogyo-ku, Kyoto-shi",Kyoto,Kyoto,600-8237,Japan,"34.986112, 135.752512",27,4 Urban,72,,2018/12/19,HOTEL
+Kisarazu ,1-16 Kaneda Higashi,Kisarazu,Chiba,292-0009,Japan,"35.435631, 139.924555",2,6 V2,150,,2018/9/29,Cafe
+Nagoya - Meijo,"1 Chome-2 Meij≈, Kita-kua",Nagoya,Aichi,462-0846,Japan,"35.18822, 136.904113",8,6 V2,138,,2018/4/27,Cafe
+Kofu ,2-4-20 Tokuyuki,K≈çfu,Yamanashi,400-0047,Japan,"35.652801, 138.547736",268,6 V2,130,,2018/1/27,Electronics
+Gotemba ,1537-1 Niihashi,Gotemba,Shizuoka,4120043,Japan,"35.299713, 138.938584",451,6 V2,130,,2017/12/23,Cafe
+Sano ,2041-7 Takeshiro,Sano,Tochigi,372-0822,Japan,"36.295431, 139.60492",20,4 V2,130,,2017/9/30,OUTLET
+Fukuoka ,"Komeri Power Sue store, 845-1 Tabishi, Sue-cho, Kasuya-gun",Fukuoka,Fukuoka,811-2221,Japan,"33.588526, 130.497193",22,6 V2,138,,2017/2/14,HomeCenter
+Takasaki ,"604-1 Kamishinden, Tamamura-cho, Saba-gun",Takasaski,Gunma,370-1133,Japan,"36.307802, 139.097401",73,6 V2,130,,2016/12/26,RoadsideSt
+Gifu Hashima ,"Barrow Hashima Inter store, 2939 Ekira",Hashima,Gifu,501-6236,Japan,"35.303584, 136.691785",2,4 V2,138,,2016/11/16,Grocery
+Nagano ,"Matsushiro Town National Route, 403 1372-1",Nagano,Nagano,381-1215,Japan,"36.572115, 138.200325",349,4 V2,150,,2016/7/16,HOTEL
+Hamamatsu ,"7822 Miyakoda-cho, Kita-ku",Hamamatsu,Shizuoka,431-2102,Japan,"34.840437, 137.748006",91,4 V2,138,,2016/7/16,SA PA Side
+Kurashiki ,1209-1 Sasaoki,Kurashiki,Okayama,710-0834,Japan,"34.578345, 133.769448",5,4 V2,138,,2016/3/18,Electronics
+Morioka ,4-40-20 Motomiya,Morioka,Iwate,020-0866,Japan,"39.685291, 141.127986",1,6 V2,130,,2016/1/14,TSUTAYA
+Sendai ,"6-2-1 Teraoka, Izumi-ku",Sendai,Miyagi,981-3204,Japan,"38.342928, 140.837815",2,4 V2,130,,2016/1/14,OUTLET
+Tokyo - Marunouchi,"1-1-1 Marunouchi, Chiyoda-ku",Tokyo,Tokyo,100-0005,Japan,"35.684656, 139.761252",11,2 V2,130,,2015/3/23,HOTEL
+Tokyo - Odaiba,"T≈çky≈-to, K≈çt≈-ku, Aomi, 2 Chome‚à4‚à32",Tokyo,Tokyo,135-0064,Japan,"35.617639, 139.776917",19,4 V2,150,,2014/11/10,Parking
+Yokohama ,"995-1 Kamiyabecho, Totsuka-ku",Yokohama,Kanagawa,245-0053,Japan,"35.4260146, 139.5375485",43,4 V2,150,,2014/9/9,Tesla Center
