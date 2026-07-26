@@ -599,6 +599,7 @@
         let googlePolylineLayer = null;
         let lastGoogleRouteObject = null;
         let scMarkers = [], hotelMarkers = [];
+        let gisMarkedScMarkers = [];
         let scData = [], hotelData = [], baseParams = {}, ecMatrix = [];
         
         let startPoint = null, endPoint = null;
@@ -779,34 +780,61 @@
 
         function renderChargers() {
             try {
-                scMarkers.forEach(m => map.removeLayer(m));
-                scMarkers = [];
+                scMarkers.forEach(m => {
+                    if (!gisMarkedScMarkers.includes(m)) {
+                        map.removeLayer(m);
+                    }
+                });
+                scMarkers = scMarkers.filter(m => gisMarkedScMarkers.includes(m));
 
                 const hideSc = document.getElementById('hide-sc-cb').checked;
-                if (hideSc) return;
 
                 scData.forEach(sc => {
                     if (!sc.lat || !sc.lng) return;
-                    const marker = L.circleMarker([sc.lat, sc.lng], {
-                        radius: 6,
-                        fillColor: '#ff00ff',
-                        color: '#fff',
-                        weight: 1,
-                        fillOpacity: 0.8,
-                        pane: 'scPane'
-                    }).addTo(map);
+                    
+                    if (sc.marker && gisMarkedScMarkers.includes(sc.marker)) {
+                        if (!map.hasLayer(sc.marker)) {
+                            sc.marker.addTo(map);
+                        }
+                        return;
+                    }
 
-                    marker.bindPopup(`
-                        <div>
-                            <strong>${sc.name}</strong><br>
-                            ${sc.power} kW / ${sc.stalls} stalls<br>
-                            タイプ: ${sc.AreaType || '未設定'}<br><br>
-                            <button onclick="setPoint('start', ${sc.lat}, ${sc.lng}, '${sc.name}')">起点に設定</button>
-                            <button onclick="setPoint('end', ${sc.lat}, ${sc.lng}, '${sc.name}')">目的地に設定</button>
-                        </div>
-                    `);
-                    sc.marker = marker;
-                    scMarkers.push(marker);
+                    if (hideSc) {
+                        if (sc.marker && map.hasLayer(sc.marker)) {
+                            map.removeLayer(sc.marker);
+                        }
+                        return;
+                    }
+
+                    if (!sc.marker) {
+                        const marker = L.circleMarker([sc.lat, sc.lng], {
+                            radius: 6,
+                            fillColor: '#ff00ff',
+                            color: '#fff',
+                            weight: 1,
+                            fillOpacity: 0.8,
+                            pane: 'scPane'
+                        });
+
+                        marker.bindPopup(`
+                            <div>
+                                <strong>${sc.name}</strong><br>
+                                ${sc.power} kW / ${sc.stalls} stalls<br>
+                                タイプ: ${sc.AreaType || '未設定'}<br><br>
+                                <button onclick="setPoint('start', ${sc.lat}, ${sc.lng}, '${sc.name}')">起点に設定</button>
+                                <button onclick="setPoint('end', ${sc.lat}, ${sc.lng}, '${sc.name}')">目的地に設定</button>
+                            </div>
+                        `);
+                        sc.marker = marker;
+                    }
+
+                    if (!map.hasLayer(sc.marker)) {
+                        sc.marker.addTo(map);
+                    }
+
+                    if (!scMarkers.includes(sc.marker)) {
+                        scMarkers.push(sc.marker);
+                    }
                 });
             } catch (e) {
                 screenLog("Failed in renderChargers: " + e.message, true);
@@ -1372,6 +1400,7 @@
         function runGISFilter(route) {
             try {
                 screenLog("Running runGISFilter processing...");
+                gisMarkedScMarkers = [];
                 const minDist = parseFloat(document.getElementById('gis-min-dist').value);
                 const maxDev = parseFloat(document.getElementById('gis-max-dev').value);
                 const routeLine = turf.lineString(route.coordinates.map(c => [c.lng, c.lat]));
@@ -1387,32 +1416,55 @@
 
                     let isMarked = false;
                     if (distFromStart >= minDist && distFromRoute <= maxDev) {
-                        if (sc.marker) {
-                            if (sc.AreaType === 'FamilyMart') {
+                        if (!sc.marker) {
+                            sc.marker = L.circleMarker([sc.lat, sc.lng], {
+                                radius: 8,
+                                fillColor: '#ff0000',
+                                color: '#fff',
+                                weight: 1,
+                                fillOpacity: 0.8,
+                                pane: 'scPane'
+                            }).bindPopup(`
+                                <div>
+                                    <strong>${sc.name}</strong><br>
+                                    ${sc.power} kW / ${sc.stalls} stalls<br>
+                                    タイプ: ${sc.AreaType || '未設定'}<br><br>
+                                    <button onclick="setPoint('start', ${sc.lat}, ${sc.lng}, '${sc.name}')">起点に設定</button>
+                                    <button onclick="setPoint('end', ${sc.lat}, ${sc.lng}, '${sc.name}')">目的地に設定</button>
+                                </div>
+                            `);
+                        }
+                        if (!map.hasLayer(sc.marker)) {
+                            sc.marker.addTo(map);
+                        }
+
+                        if (sc.AreaType === 'FamilyMart') {
+                            sc.marker.setStyle({ 
+                                color: '#009fdf',     
+                                weight: 3,            
+                                fillColor: '#00ff00', 
+                                radius: 8
+                            });
+                        } else {
+                            if (sc.AreaType === '7Eleven') {
                                 sc.marker.setStyle({ 
-                                    color: '#009fdf',     
+                                    color: '#ff0000',     
                                     weight: 3,            
                                     fillColor: '#00ff00', 
                                     radius: 8
                                 });
                             } else {
-                                if (sc.AreaType === '7Eleven') {
-                                    sc.marker.setStyle({ 
-                                        color: '#ff0000',     
-                                        weight: 3,            
-                                        fillColor: '#00ff00', 
-                                        radius: 8
-                                    });
-                                } else {
-                                    sc.marker.setStyle({ 
-                                        color: '#fff', 
-                                        fillColor: '#ff0000', 
-                                        radius: 8 
-                                    });
-                                }
+                                sc.marker.setStyle({ 
+                                    color: '#fff', 
+                                    fillColor: '#ff0000', 
+                                    radius: 8 
+                                });
                             }
                         }
                         isMarked = true;
+                        if (!gisMarkedScMarkers.includes(sc.marker)) {
+                            gisMarkedScMarkers.push(sc.marker);
+                        }
                     } else {
                         if (sc.marker) {
                             sc.marker.setStyle({ 
@@ -1428,6 +1480,8 @@
                         markedChargers.push(sc);
                     }
                 });
+
+                renderChargers();
 
                 screenLog(`runGISFilter complete. Found ${markedChargers.length} qualified SC items within distance filters.`);
                 calculateMarkedChargersRoutes(markedChargers);
