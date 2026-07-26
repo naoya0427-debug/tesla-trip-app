@@ -498,6 +498,9 @@
         <div class="section">
             <div class="section-title">GIS 抽出条件 (SC)</div>
             <div class="control-group">
+                <label><input type="checkbox" id="hide-sc-cb"> Hide SC</label>
+            </div>
+            <div class="control-group">
                 <label>最小走行距離 (km)</label>
                 <input type="number" id="gis-min-dist" value="150">
             </div>
@@ -779,6 +782,9 @@
                 scMarkers.forEach(m => map.removeLayer(m));
                 scMarkers = [];
 
+                const hideSc = document.getElementById('hide-sc-cb').checked;
+                if (hideSc) return;
+
                 scData.forEach(sc => {
                     if (!sc.lat || !sc.lng) return;
                     const marker = L.circleMarker([sc.lat, sc.lng], {
@@ -806,6 +812,8 @@
                 screenLog("Failed in renderChargers: " + e.message, true);
             }
         }
+
+        document.getElementById('hide-sc-cb').addEventListener('change', renderChargers);
 
         function renderHotels() {
             try {
@@ -1379,37 +1387,41 @@
 
                     let isMarked = false;
                     if (distFromStart >= minDist && distFromRoute <= maxDev) {
-                        if (sc.AreaType === 'FamilyMart') {
-                            sc.marker.setStyle({ 
-                                color: '#009fdf',     
-                                weight: 3,            
-                                fillColor: '#00ff00', 
-                                radius: 8
-                            });
-                        } else {
-                            if (sc.AreaType === '7Eleven') {
+                        if (sc.marker) {
+                            if (sc.AreaType === 'FamilyMart') {
                                 sc.marker.setStyle({ 
-                                    color: '#ff0000',     
+                                    color: '#009fdf',     
                                     weight: 3,            
                                     fillColor: '#00ff00', 
                                     radius: 8
                                 });
                             } else {
-                                sc.marker.setStyle({ 
-                                    color: '#fff', 
-                                    fillColor: '#ff0000', 
-                                    radius: 8 
-                                });
+                                if (sc.AreaType === '7Eleven') {
+                                    sc.marker.setStyle({ 
+                                        color: '#ff0000',     
+                                        weight: 3,            
+                                        fillColor: '#00ff00', 
+                                        radius: 8
+                                    });
+                                } else {
+                                    sc.marker.setStyle({ 
+                                        color: '#fff', 
+                                        fillColor: '#ff0000', 
+                                        radius: 8 
+                                    });
+                                }
                             }
                         }
                         isMarked = true;
                     } else {
-                        sc.marker.setStyle({ 
-                            color: '#ff00ff',
-                            weight: 2,  
-                            fillColor: '#fff', 
-                            radius: 5 
-                        });
+                        if (sc.marker) {
+                            sc.marker.setStyle({ 
+                                color: '#ff00ff',
+                                weight: 2,  
+                                fillColor: '#fff', 
+                                radius: 5 
+                            });
+                        }
                     }
 
                     if (isMarked) {
