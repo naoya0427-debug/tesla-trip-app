@@ -459,6 +459,7 @@
                 <label>自宅住所入力 (abr-geocoder)</label>
                 <div class="search-wrapper">
                     <input type="text" id="home-address-input" placeholder="自宅の住所を入力...">
+                    <button id="home-confirm-btn" class="search-btn">確認</button>
                 </div>
             </div>
             <div style="display: flex; gap: 4px; margin-top: 2px;">
@@ -1038,6 +1039,14 @@
                 }
             }
         }
+
+        document.getElementById('home-confirm-btn').onclick = async () => {
+            await resolveHomeAddress();
+            map.setView(HOME_POS, 14);
+            if (homeMarker) {
+                homeMarker.openPopup();
+            }
+        };
 
         document.getElementById('home-start-btn').onclick = async () => {
             await resolveHomeAddress();
