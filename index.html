@@ -455,6 +455,12 @@
                 </div>
                 <div id="search-results"></div>
             </div>
+            <div class="control-group" style="margin-top: 6px;">
+                <label>自宅住所入力 (abr-geocoder)</label>
+                <div class="search-wrapper">
+                    <input type="text" id="home-address-input" placeholder="自宅の住所を入力...">
+                </div>
+            </div>
             <div style="display: flex; gap: 4px; margin-top: 2px;">
                 <button id="home-start-btn" style="flex: 1;">自宅を起点に</button>
                 <button id="home-end-btn" style="flex: 1;">自宅を目的地に</button>
@@ -558,6 +564,7 @@
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"></script>
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@digital-go-jp/abr-geocoder@0.3.1/dist/abr-geocoder.min.js"></script>
 
     <script>
         function screenLog(message, isError) {
@@ -594,7 +601,8 @@
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        const HOME_POS = [35.674803266289864, 139.46550165203817];
+        let HOME_POS = [35.674803266289864, 139.46550165203817];
+        let homeMarker = null;
         let map, routingControl;
         let googlePolylineLayer = null;
         let lastGoogleRouteObject = null;
@@ -638,7 +646,7 @@
                 map.getPane('scPane').style.zIndex = 620;
                 map.getPane('hotelPane').style.zIndex = 600;
 
-                L.marker(HOME_POS).addTo(map).bindPopup("自宅");
+                homeMarker = L.marker(HOME_POS).addTo(map).bindPopup("自宅");
 
                 map.on('click', function(e) {
                     if (clickPopup) map.closePopup(clickPopup);
@@ -1003,11 +1011,41 @@
             }
         }
 
-        document.getElementById('home-start-btn').onclick = () => {
+        async function resolveHomeAddress() {
+            const homeAddressInput = document.getElementById('home-address-input');
+            const address = homeAddressInput ? homeAddressInput.value.trim() : '';
+
+            if (address !== '') {
+                try {
+                    screenLog(`Resolving home address using abr-geocoder: ${address}`);
+                    const result = await window.abrGeocoder.geocode(address);
+                    if (result && result.length > 0 && result[0].geometry && result[0].geometry.coordinates) {
+                        const lng = result[0].geometry.coordinates[0];
+                        const lat = result[0].geometry.coordinates[1];
+                        HOME_POS = [lat, lng];
+                        screenLog(`Home address resolved successfully: [${lat}, ${lng}]`);
+                        if (homeMarker) {
+                            map.removeLayer(homeMarker);
+                        }
+                        homeMarker = L.marker(HOME_POS).addTo(map).bindPopup("自宅");
+                    } else {
+                        screenLog(`abr-geocoder could not resolve address: ${address}`, true);
+                        alert("自宅住所のジオコーディングに失敗しました。デフォルトの自宅位置を使用します。");
+                    }
+                } catch (e) {
+                    screenLog("Failed to geocode home address: " + e.message, true);
+                    alert("自宅住所の解析中にエラーが発生しました。");
+                }
+            }
+        }
+
+        document.getElementById('home-start-btn').onclick = async () => {
+            await resolveHomeAddress();
             setPoint('start', HOME_POS[0], HOME_POS[1], '自宅');
         };
 
-        document.getElementById('home-end-btn').onclick = () => {
+        document.getElementById('home-end-btn').onclick = async () => {
+            await resolveHomeAddress();
             setPoint('end', HOME_POS[0], HOME_POS[1], '自宅');
         };
 
