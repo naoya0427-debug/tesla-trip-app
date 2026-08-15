@@ -742,7 +742,7 @@
         function loadGoogleMapsScript(key) {
             try {
                 const script = document.createElement('script');
-                script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=onGoogleMapsLibrariesLoaded`;
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&callback=onGoogleMapsLibrariesLoaded`;
                 script.async = true;
                 script.defer = true;
                 window.onGoogleMapsLibrariesLoaded = function() {
@@ -898,51 +898,106 @@
             searchBtn.disabled = true;
             searchBtn.textContent = "検索中...";
 
-            try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=jp`);
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                
-                const data = await res.json();
-                searchResults.innerHTML = '';
-                
-                if (data && data.length > 0) {
-                    data.forEach(item => {
-                        let rawName = item.display_name || "不明な場所";
-                        let displayName = rawName.split(',')[0]; 
+            const engine = getSelectedEngine();
 
-                        const div = document.createElement('div');
-                        div.className = 'search-item';
-                        div.textContent = rawName;
-                        div.onclick = () => {
-                            const lat = parseFloat(item.lat);
-                            const lon = parseFloat(item.lon);
+            if (engine === 'google' && googleMapsLoaded) {
+                screenLog(`Executing Google Places TextSearch for query: ${query}`);
+                try {
+                    const service = new google.maps.places.PlacesService(map);
+                    const request = {
+                        query: query,
+                        componentRestrictions: { country: 'jp' }
+                    };
 
-                            if (searchPreviewMarker) map.removeLayer(searchPreviewMarker);
+                    service.textSearch(request, (results, status) => {
+                        searchResults.innerHTML = '';
+                        if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+                            results.forEach(place => {
+                                const lat = place.geometry.location.lat();
+                                const lon = place.geometry.location.lng();
+                                const rawName = place.name;
+                                const address = place.formatted_address || '';
 
-                            searchPreviewMarker = L.marker([lat, lon]).addTo(map);
-                            searchPreviewMarker.bindPopup(`
-                                <div>
-                                    <strong>${displayName}</strong><br><br>
-                                    <button onclick="setPointFromSearch('start', ${lat}, ${lon}, '${displayName.replace(/'/g, "\\'")}')">起点に設定</button>
-                                    <button onclick="setPointFromSearch('end', ${lat}, ${lon}, '${displayName.replace(/'/g, "\\'")}')">目的地に設定</button>
-                                </div>
-                            `).openPopup();
+                                const div = document.createElement('div');
+                                div.className = 'search-item';
+                                div.textContent = `${rawName} (${address})`;
+                                div.onclick = () => {
+                                    if (searchPreviewMarker) map.removeLayer(searchPreviewMarker);
 
-                            map.setView([lat, lon], 14);
+                                    searchPreviewMarker = L.marker([lat, lon]).addTo(map);
+                                    searchPreviewMarker.bindPopup(`
+                                        <div>
+                                            <strong>${rawName}</strong><br><br>
+                                            <button onclick="setPointFromSearch('start', ${lat}, ${lon}, '${rawName.replace(/'/g, "\\'")}')">起点に設定</button>
+                                            <button onclick="setPointFromSearch('end', ${lat}, ${lon}, '${rawName.replace(/'/g, "\\'")}')">目的地に設定</button>
+                                        </div>
+                                    `).openPopup();
+
+                                    map.setView([lat, lon], 14);
+                                    searchResults.style.display = 'block';
+                                };
+                                searchResults.appendChild(div);
+                            });
                             searchResults.style.display = 'block';
-                        };
-                        searchResults.appendChild(div);
+                        } else {
+                            alert("Google Placesで見つかりませんでした。");
+                        }
+                        searchBtn.disabled = false;
+                        searchBtn.textContent = "検索";
                     });
-                    searchResults.style.display = 'block';
-                } else {
-                    alert("見つかりませんでした。");
+                } catch (err) {
+                    screenLog("Google Places search failed: " + err.message, true);
+                    alert(`エラーが発生しました: ${err.message}`);
+                    searchBtn.disabled = false;
+                    searchBtn.textContent = "検索";
                 }
-            } catch (err) {
-                screenLog("Search failed: " + err.message, true);
-                alert(`エラーが発生しました: ${err.message}`);
-            } finally {
-                searchBtn.disabled = false;
-                searchBtn.textContent = "検索";
+            } else {
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=jp`);
+                    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                    
+                    const data = await res.json();
+                    searchResults.innerHTML = '';
+                    
+                    if (data && data.length > 0) {
+                        data.forEach(item => {
+                            let rawName = item.display_name || "不明な場所";
+                            let displayName = rawName.split(',')[0]; 
+
+                            const div = document.createElement('div');
+                            div.className = 'search-item';
+                            div.textContent = rawName;
+                            div.onclick = () => {
+                                const lat = parseFloat(item.lat);
+                                const lon = parseFloat(item.lon);
+
+                                if (searchPreviewMarker) map.removeLayer(searchPreviewMarker);
+
+                                searchPreviewMarker = L.marker([lat, lon]).addTo(map);
+                                searchPreviewMarker.bindPopup(`
+                                    <div>
+                                        <strong>${displayName}</strong><br><br>
+                                        <button onclick="setPointFromSearch('start', ${lat}, ${lon}, '${displayName.replace(/'/g, "\\'")}')">起点に設定</button>
+                                        <button onclick="setPointFromSearch('end', ${lat}, ${lon}, '${displayName.replace(/'/g, "\\'")}')">目的地に設定</button>
+                                    </div>
+                                `).openPopup();
+
+                                map.setView([lat, lon], 14);
+                                searchResults.style.display = 'block';
+                            };
+                            searchResults.appendChild(div);
+                        });
+                        searchResults.style.display = 'block';
+                    } else {
+                        alert("見つかりませんでした。");
+                    }
+                } catch (err) {
+                    screenLog("Search failed: " + err.message, true);
+                    alert(`エラーが発生しました: ${err.message}`);
+                } finally {
+                    searchBtn.disabled = false;
+                    searchBtn.textContent = "検索";
+                }
             }
         }
 
