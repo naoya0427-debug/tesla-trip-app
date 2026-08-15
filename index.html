@@ -456,7 +456,7 @@
                 <div id="search-results"></div>
             </div>
             <div class="control-group" style="margin-top: 6px;">
-                <label>自宅住所入力 (abr-geocoder)</label>
+                <label>自宅住所入力 (GSI Geocoder)</label>
                 <div class="search-wrapper">
                     <input type="text" id="home-address-input" placeholder="自宅の住所を入力...">
                     <button id="home-confirm-btn" class="search-btn">確認</button>
@@ -564,7 +564,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@digital-go-jp/abr-geocoder@0.3.1/dist/abr-geocoder.min.js"></script>
 
     <script>
         function screenLog(message, isError) {
@@ -1017,28 +1016,14 @@
 
             if (address !== '') {
                 try {
-                    screenLog(`Resolving home address using abr-geocoder: ${address}`);
+                    screenLog(`Resolving home address using GSI Geocoder: ${address}`);
 
-                    let geocoder = null;
-                    if (typeof window.createAbrGeocoder === 'function') {
-                        geocoder = await window.createAbrGeocoder();
-                    } else if (window.abrGeocoder && typeof window.abrGeocoder.createAbrGeocoder === 'function') {
-                        geocoder = await window.abrGeocoder.createAbrGeocoder();
-                    } else if (typeof window.abrGeocoder === 'function') {
-                        geocoder = new window.abrGeocoder();
-                    } else if (window.abrGeocoder && typeof window.abrGeocoder.AbrGeocoder === 'function') {
-                        geocoder = new window.abrGeocoder.AbrGeocoder();
-                    } else if (typeof window.AbrGeocoder === 'function') {
-                        geocoder = new window.AbrGeocoder();
-                    } else if (window.abrGeocoder && typeof window.abrGeocoder.geocode === 'function') {
-                        geocoder = window.abrGeocoder;
+                    const response = await fetch(`https://msearch.gsi.go.jp/address-search/AddressSearch?q=${encodeURIComponent(address)}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
-
-                    if (!geocoder || typeof geocoder.geocode !== 'function') {
-                        throw new Error("abrGeocoder geocode method is not available.");
-                    }
-
-                    const result = await geocoder.geocode(address);
+                    const result = await response.json();
+                    
                     let resArray = result;
                     if (result && !Array.isArray(result) && result.features) {
                         resArray = result.features;
@@ -1070,7 +1055,7 @@
                         }
                     }
 
-                    screenLog(`abr-geocoder could not resolve address coordinates: ${address}`, true);
+                    screenLog(`GSI Geocoder could not resolve address coordinates: ${address}`, true);
                     alert("自宅住所のジオコーディングに失敗しました。デフォルトの自宅位置を使用します。");
 
                 } catch (e) {
