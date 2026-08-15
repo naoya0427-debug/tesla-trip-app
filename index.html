@@ -1019,16 +1019,21 @@
             if (address !== '') {
                 try {
                     screenLog(`Resolving home address using abr-geocoder: ${address}`);
-                    let geocoderObj = window.abrGeocoder;
-                    if (typeof geocoderObj === 'function') {
-                        geocoderObj = new window.abrGeocoder();
-                    } else if (geocoderObj && typeof geocoderObj.create === 'function') {
-                        geocoderObj = geocoderObj.create();
+                    let geocodeFn = null;
+                    if (typeof window.abrGeocoder === 'function') {
+                        const inst = new window.abrGeocoder();
+                        geocodeFn = inst.geocode ? inst.geocode.bind(inst) : null;
+                    } else if (window.abrGeocoder && typeof window.abrGeocoder.geocode === 'function') {
+                        geocodeFn = window.abrGeocoder.geocode.bind(window.abrGeocoder);
+                    } else if (window.abrGeocoder && typeof window.abrGeocoder.create === 'function') {
+                        const inst = window.abrGeocoder.create();
+                        geocodeFn = inst.geocode ? inst.geocode.bind(inst) : null;
                     }
-                    if (!geocoderObj || typeof geocoderObj.geocode !== 'function') {
-                        throw new Error("abrGeocoder object or geocode method is not available.");
+
+                    if (!geocodeFn) {
+                        throw new Error("abrGeocoder geocode method is not available.");
                     }
-                    const result = await geocoderObj.geocode(address);
+                    const result = await geocodeFn(address);
                     if (result && result.length > 0 && result[0].geometry && result[0].geometry.coordinates) {
                         const lng = result[0].geometry.coordinates[0];
                         const lat = result[0].geometry.coordinates[1];
