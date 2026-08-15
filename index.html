@@ -1018,20 +1018,18 @@
             if (address !== '') {
                 try {
                     screenLog(`Resolving home address using abr-geocoder: ${address}`);
-                    
-                    const options = {
-                        schema: 'https',
-                        host: 'msearch.gsi.go.jp',
-                        port: 443
-                    };
 
                     let geocoder = null;
-                    if (typeof window.abrGeocoder === 'function') {
-                        geocoder = new window.abrGeocoder(options);
+                    if (typeof window.createAbrGeocoder === 'function') {
+                        geocoder = await window.createAbrGeocoder();
+                    } else if (window.abrGeocoder && typeof window.abrGeocoder.createAbrGeocoder === 'function') {
+                        geocoder = await window.abrGeocoder.createAbrGeocoder();
+                    } else if (typeof window.abrGeocoder === 'function') {
+                        geocoder = new window.abrGeocoder();
                     } else if (window.abrGeocoder && typeof window.abrGeocoder.AbrGeocoder === 'function') {
-                        geocoder = new window.abrGeocoder.AbrGeocoder(options);
+                        geocoder = new window.abrGeocoder.AbrGeocoder();
                     } else if (typeof window.AbrGeocoder === 'function') {
-                        geocoder = new window.AbrGeocoder(options);
+                        geocoder = new window.AbrGeocoder();
                     } else if (window.abrGeocoder && typeof window.abrGeocoder.geocode === 'function') {
                         geocoder = window.abrGeocoder;
                     }
