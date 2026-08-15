@@ -1018,34 +1018,63 @@
             if (address !== '') {
                 try {
                     screenLog(`Resolving home address using abr-geocoder: ${address}`);
-                    let geocodeFn = null;
+                    
+                    const options = {
+                        schema: 'https',
+                        host: 'msearch.gsi.go.jp',
+                        port: 443
+                    };
+
+                    let geocoder = null;
                     if (typeof window.abrGeocoder === 'function') {
-                        const inst = new window.abrGeocoder();
-                        geocodeFn = inst.geocode ? inst.geocode.bind(inst) : null;
+                        geocoder = new window.abrGeocoder(options);
+                    } else if (window.abrGeocoder && typeof window.abrGeocoder.AbrGeocoder === 'function') {
+                        geocoder = new window.abrGeocoder.AbrGeocoder(options);
+                    } else if (typeof window.AbrGeocoder === 'function') {
+                        geocoder = new window.AbrGeocoder(options);
                     } else if (window.abrGeocoder && typeof window.abrGeocoder.geocode === 'function') {
-                        geocodeFn = window.abrGeocoder.geocode.bind(window.abrGeocoder);
-                    } else if (window.abrGeocoder && typeof window.abrGeocoder.create === 'function') {
-                        const inst = window.abrGeocoder.create();
-                        geocodeFn = inst.geocode ? inst.geocode.bind(inst) : null;
+                        geocoder = window.abrGeocoder;
                     }
 
-                    if (!geocodeFn) {
+                    if (!geocoder || typeof geocoder.geocode !== 'function') {
                         throw new Error("abrGeocoder geocode method is not available.");
                     }
-                    const result = await geocodeFn(address);
-                    if (result && result.length > 0 && result[0].geometry && result[0].geometry.coordinates) {
-                        const lng = result[0].geometry.coordinates[0];
-                        const lat = result[0].geometry.coordinates[1];
-                        HOME_POS = [lat, lng];
-                        screenLog(`Home address resolved successfully: [${lat}, ${lng}]`);
-                        if (homeMarker) {
-                            map.removeLayer(homeMarker);
-                        }
-                        homeMarker = L.marker(HOME_POS).addTo(map).bindPopup("自宅");
-                    } else {
-                        screenLog(`abr-geocoder could not resolve address: ${address}`, true);
-                        alert("自宅住所のジオコーディングに失敗しました。デフォルトの自宅位置を使用します。");
+
+                    const result = await geocoder.geocode(address);
+                    let resArray = result;
+                    if (result && !Array.isArray(result) && result.features) {
+                        resArray = result.features;
                     }
+
+                    if (resArray && resArray.length > 0) {
+                        const target = resArray[0];
+                        let lat, lng;
+
+                        if (target.geometry && target.geometry.coordinates) {
+                            lng = target.geometry.coordinates[0];
+                            lat = target.geometry.coordinates[1];
+                        } else if (target.lat !== undefined && target.lng !== undefined) {
+                            lat = target.lat;
+                            lng = target.lng;
+                        } else if (target.lat !== undefined && target.lon !== undefined) {
+                            lat = target.lat;
+                            lng = target.lon;
+                        }
+
+                        if (lat !== undefined && lng !== undefined) {
+                            HOME_POS = [parseFloat(lat), parseFloat(lng)];
+                            screenLog(`Home address resolved successfully: [${lat}, ${lng}]`);
+                            if (homeMarker) {
+                                map.removeLayer(homeMarker);
+                            }
+                            homeMarker = L.marker(HOME_POS).addTo(map).bindPopup("自宅");
+                            return;
+                        }
+                    }
+
+                    screenLog(`abr-geocoder could not resolve address coordinates: ${address}`, true);
+                    alert("自宅住所のジオコーディングに失敗しました。デフォルトの自宅位置を使用します。");
+
                 } catch (e) {
                     screenLog("Failed to geocode home address: " + e.message, true);
                     alert("自宅住所の解析中にエラーが発生しました。");
