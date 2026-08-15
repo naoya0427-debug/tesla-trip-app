@@ -1019,7 +1019,16 @@
             if (address !== '') {
                 try {
                     screenLog(`Resolving home address using abr-geocoder: ${address}`);
-                    const result = await window.abrGeocoder.geocode(address);
+                    let geocoderObj = window.abrGeocoder;
+                    if (typeof geocoderObj === 'function') {
+                        geocoderObj = new window.abrGeocoder();
+                    } else if (geocoderObj && typeof geocoderObj.create === 'function') {
+                        geocoderObj = geocoderObj.create();
+                    }
+                    if (!geocoderObj || typeof geocoderObj.geocode !== 'function') {
+                        throw new Error("abrGeocoder object or geocode method is not available.");
+                    }
+                    const result = await geocoderObj.geocode(address);
                     if (result && result.length > 0 && result[0].geometry && result[0].geometry.coordinates) {
                         const lng = result[0].geometry.coordinates[0];
                         const lat = result[0].geometry.coordinates[1];
